@@ -1,0 +1,9 @@
+.DS_STORE
+.settings
+.idea/
+*.class
+/.gradle
+.dist
+classes/
+*.war
+*.ear
