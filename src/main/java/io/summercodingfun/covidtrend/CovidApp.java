@@ -1,10 +1,10 @@
-package com.covidcases;
+package io.summercodingfun.covidtrend;
 
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import com.covidcases.resources.CovidResource;
-import com.covidcases.health.TemplateHealthCheck;
+import io.summercodingfun.covidtrend.resources.CovidResource;
+import io.summercodingfun.covidtrend.health.TemplateHealthCheck;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -1,4 +1,4 @@
-package com.covidcases.health;
+package io.summercodingfun.covidtrend.health;
 
 import com.codahale.metrics.health.HealthCheck;
 

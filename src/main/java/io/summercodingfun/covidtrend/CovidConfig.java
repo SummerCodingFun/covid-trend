@@ -1,4 +1,4 @@
-package com.covidcases;
+package io.summercodingfun.covidtrend;
 
 import io.dropwizard.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;

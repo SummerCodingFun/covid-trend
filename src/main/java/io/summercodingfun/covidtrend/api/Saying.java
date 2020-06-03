@@ -1,4 +1,4 @@
-package com.covidcases.api;
+package io.summercodingfun.covidtrend.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Length;

@@ -1,6 +1,6 @@
-package com.covidcases.resources;
+package io.summercodingfun.covidtrend.resources;
 
-import com.covidcases.api.Saying;
+import io.summercodingfun.covidtrend.api.Saying;
 import com.codahale.metrics.annotation.Timed;
 
 import javax.ws.rs.GET;
@@ -8,12 +8,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import java.text.ParseException;
 import java.util.Optional;
-import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
-import com.covidcases.CovidConfig;
+
+import io.summercodingfun.covidtrend.CovidConfig;
 
 @Path("/covid-cases")
 @Produces(MediaType.APPLICATION_JSON)
