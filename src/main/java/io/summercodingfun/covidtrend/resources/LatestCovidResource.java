@@ -2,16 +2,15 @@ package io.summercodingfun.covidtrend.resources;
 
 import io.summercodingfun.covidtrend.api.Saying;
 import com.codahale.metrics.annotation.Timed;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.SortedMap;
 
 @Path("/covid-cases/{location}")
@@ -29,12 +28,10 @@ public class LatestCovidResource {
     @GET
     @Timed
     public Saying displayStateData(@PathParam("location") String state) {
-        Date d1 = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(d1);
-        cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
-        DateFormat par = new SimpleDateFormat("yyyy-MM-dd");
-        return new Saying(state, cases.get(createKey(state, par.format(cal.getTime()))), deaths.get(createKey(state, par.format(cal.getTime()))));
+        DateTime today = new DateTime();
+        today = today.plusDays(-1);
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+        return new Saying(state, cases.get(createKey(state, fmt.print(today))), deaths.get(createKey(state, fmt.print(today))));
     }
 
     public static String createKey(String x, String y){

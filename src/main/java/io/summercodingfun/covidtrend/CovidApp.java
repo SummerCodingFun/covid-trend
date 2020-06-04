@@ -44,7 +44,7 @@ public class CovidApp extends Application<CovidConfig>{
             deaths.put(k, Integer.parseInt(arr[4]));
         }
 
-        final CovidResource resource = new CovidResource(config, cases, deaths);
+        final CovidResource resource = new CovidResource(cases, deaths);
         final CovidRangeDataResource rangeResource = new CovidRangeDataResource(cases, deaths);
         final LatestCovidResource latestResource = new LatestCovidResource(cases, deaths);
         final TemplateHealthCheck healthCheck = new TemplateHealthCheck(config.getTemplate());

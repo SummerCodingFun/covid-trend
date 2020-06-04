@@ -2,6 +2,7 @@ package io.summercodingfun.covidtrend.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import io.summercodingfun.covidtrend.api.CovidRangeData;
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -10,13 +11,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.SortedMap;
 import java.util.List;
-import java.util.Date;
 
 @Path("/covid-range-data/{location}/{startingDate}/{range}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -32,28 +30,23 @@ public class CovidRangeDataResource {
 
     @GET
     @Timed
-    public CovidRangeData displayRangeData(@PathParam("location") String state, @PathParam("startingDate") String startingDate, @PathParam("range") int range){
+    public CovidRangeData displayRangeData(@PathParam("location") String state, @PathParam("startingDate") String startingDate, @PathParam("range") int range) throws ParseException {
         List<CasesByDate> information = new ArrayList<>();
 
         CasesByDate yourData = new CasesByDate(startingDate, cases.get(createKey(state, startingDate)));
         information.add(yourData);
 
-        DateTimeFormatter date = DateTimeFormat.forPattern("yyyy-MM-dd");
-        long millis  = date.parseMillis(startingDate);
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(millis);
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+        long millis  = fmt.parseMillis(startingDate);
 
         int multiplier = range < 0 ? -1 : 1;
+        DateTime startingDateTime = new DateTime(millis);
 
-        for (int i = 0; i < range*multiplier; i ++) {
-            cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) + (1*multiplier));
-            Date dd = cal.getTime();
-            DateFormat par = new SimpleDateFormat("yyyy-MM-dd");
-            String fullKey = createKey(state, par.format(dd));
-            CasesByDate newData = new CasesByDate(par.format(dd), cases.get(fullKey));
+        for (int i = 0; i < range*multiplier; i++){
+            startingDateTime = startingDateTime.plusDays(1*multiplier);
+            CasesByDate newData = new CasesByDate(fmt.print(startingDateTime), cases.get(createKey(state, fmt.print(startingDateTime))));
             information.add(newData);
         }
-
         return new CovidRangeData(state, information);
     }
 

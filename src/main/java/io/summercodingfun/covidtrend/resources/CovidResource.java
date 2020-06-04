@@ -10,18 +10,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.SortedMap;
 
-import io.summercodingfun.covidtrend.CovidConfig;
-
 @Path("/covid-cases/{location}/{date}")
 @Produces(MediaType.APPLICATION_JSON)
 
 public class CovidResource {
-    private final String template;
     private final SortedMap<String, Integer> cases;
     private final SortedMap<String, Integer> deaths;
 
-    public CovidResource(CovidConfig config, SortedMap<String, Integer> cases, SortedMap<String, Integer> deaths){
-        this.template = config.getTemplate();
+    public CovidResource(SortedMap<String, Integer> cases, SortedMap<String, Integer> deaths){
         this.cases = cases;
         this.deaths = deaths;
     }
