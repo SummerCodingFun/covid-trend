@@ -12,7 +12,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.SortedMap;
+import java.util.List;
+import java.util.Date;
 
 @Path("/covid-range-data/{location}/{startingDate}/{range}")
 @Produces(MediaType.APPLICATION_JSON)

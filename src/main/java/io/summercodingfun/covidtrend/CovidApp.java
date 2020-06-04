@@ -6,6 +6,7 @@ import io.dropwizard.setup.Environment;
 import io.summercodingfun.covidtrend.resources.CovidRangeDataResource;
 import io.summercodingfun.covidtrend.resources.CovidResource;
 import io.summercodingfun.covidtrend.health.TemplateHealthCheck;
+import io.summercodingfun.covidtrend.resources.LatestCovidResource;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -45,11 +46,13 @@ public class CovidApp extends Application<CovidConfig>{
 
         final CovidResource resource = new CovidResource(config, cases, deaths);
         final CovidRangeDataResource rangeResource = new CovidRangeDataResource(cases, deaths);
+        final LatestCovidResource latestResource = new LatestCovidResource(cases, deaths);
         final TemplateHealthCheck healthCheck = new TemplateHealthCheck(config.getTemplate());
 
         env.healthChecks().register("template", healthCheck);
         env.jersey().register(resource);
         env.jersey().register(rangeResource);
+        env.jersey().register(latestResource);
     }
     public String createKey(String x, String y){
         return x + ":" + y;
