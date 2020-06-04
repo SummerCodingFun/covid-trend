@@ -13,10 +13,11 @@ repositories{
 
 dependencies {
   compile group: 'io.dropwizard', name: 'dropwizard-core', version: dropwizardVersion
-
+  compile group: 'org.javatuples', name: 'javatuples', version: '1.2'
+  compile group: 'joda-time', name: 'joda-time', version: '2.10.6'
 }
 
-mainClassName = 'com.covidcases.CovidApp'
+mainClassName = 'io.summercodingfun.covidtrend.CovidApp'
 
 run {
   args = ['server', 'covid-cases.yml']

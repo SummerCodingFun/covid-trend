@@ -1,4 +1,2 @@
-template: The data for %s
-infoCases: number of cases are %s
-infoDeaths: number of deaths are %s
+template: The state of %s 's data
 

@@ -3,6 +3,7 @@ package io.summercodingfun.covidtrend;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.summercodingfun.covidtrend.resources.CovidRangeDataResource;
 import io.summercodingfun.covidtrend.resources.CovidResource;
 import io.summercodingfun.covidtrend.health.TemplateHealthCheck;
 
@@ -25,7 +26,6 @@ public class CovidApp extends Application<CovidConfig>{
 
     @Override
     public void initialize(Bootstrap<CovidConfig> bootstrap){
-
     }
 
     @Override
@@ -38,16 +38,18 @@ public class CovidApp extends Application<CovidConfig>{
         reader.readLine();
         while((line = reader.readLine()) != null){
             String[] arr = line.split(",");
-            String k = createKey(arr[0], arr[1]);
+            String k = createKey(arr[1], arr[0]);
             cases.put(k, Integer.parseInt(arr[3]));
             deaths.put(k, Integer.parseInt(arr[4]));
         }
 
         final CovidResource resource = new CovidResource(config, cases, deaths);
+        final CovidRangeDataResource rangeResource = new CovidRangeDataResource(cases, deaths);
         final TemplateHealthCheck healthCheck = new TemplateHealthCheck(config.getTemplate());
 
         env.healthChecks().register("template", healthCheck);
         env.jersey().register(resource);
+        env.jersey().register(rangeResource);
     }
     public String createKey(String x, String y){
         return x + ":" + y;
