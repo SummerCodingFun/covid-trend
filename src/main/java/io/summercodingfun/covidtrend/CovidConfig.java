@@ -9,10 +9,6 @@ public class CovidConfig extends Configuration {
     private String template;
     @NotEmpty
     private String defaultLocation = "USA";
-    @NotEmpty
-    private String infoCases;
-    @NotEmpty
-    private String infoDeaths;
 
     @JsonProperty
     public String getTemplate(){
@@ -20,10 +16,8 @@ public class CovidConfig extends Configuration {
     }
 
     @JsonProperty
-    public void setTemplate(String template, String infoCases, String infoDeaths){
+    public void setTemplate(String template, String infoCases, String infoDeaths, String trend){
         this.template = template;
-        this.infoCases = infoCases;
-        this.infoDeaths = infoDeaths;
     }
 
     @JsonProperty
@@ -34,25 +28,5 @@ public class CovidConfig extends Configuration {
     @JsonProperty
     public void setDefaultLocation(String state){
         this.defaultLocation = state;
-    }
-
-    @JsonProperty
-    public String getInfoCases(){
-        return infoCases;
-    }
-
-    @JsonProperty
-    public void setInfoCases(String info){
-        this.infoCases = info;
-    }
-
-    @JsonProperty
-    public String getInfoDeaths(){
-        return infoDeaths;
-    }
-
-    @JsonProperty
-    public void setInfoDeaths(String info){
-        this.infoDeaths = info;
     }
 }
