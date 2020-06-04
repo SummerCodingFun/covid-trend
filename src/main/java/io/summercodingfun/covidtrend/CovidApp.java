@@ -26,7 +26,6 @@ public class CovidApp extends Application<CovidConfig>{
 
     @Override
     public void initialize(Bootstrap<CovidConfig> bootstrap){
-        System.out.println("Hello");
     }
 
     @Override

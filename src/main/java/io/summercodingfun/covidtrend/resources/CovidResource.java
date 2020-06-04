@@ -12,7 +12,7 @@ import java.util.SortedMap;
 
 import io.summercodingfun.covidtrend.CovidConfig;
 
-@Path("/covid-cases/{location}")
+@Path("/covid-cases/{location}/{date}")
 @Produces(MediaType.APPLICATION_JSON)
 
 public class CovidResource {
@@ -28,7 +28,11 @@ public class CovidResource {
 
     @GET
     @Timed
-    public Saying displayStateData(@PathParam("location") String state) {
-        return new Saying(state, cases.get(state), deaths.get(state));
+    public Saying displayStateData(@PathParam("location") String state, @PathParam("date") String date) {
+        return new Saying(state, cases.get(createKey(state, date)), deaths.get(createKey(state, date)));
+    }
+
+    public static String createKey(String x, String y){
+        return x + ":" + y;
     }
 }

@@ -10,8 +10,8 @@ public class CovidRangeData {
     private List<CasesByDate> data;
 
     public CovidRangeData() {
-
     }
+
     public CovidRangeData(String s, List<CasesByDate> d){
         this.state = s;
         data = d;

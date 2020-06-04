@@ -12,11 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.SortedMap;
-
+import java.util.*;
 
 @Path("/covid-range-data/{location}/{startingDate}/{range}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -40,23 +36,19 @@ public class CovidRangeDataResource {
 
         DateTimeFormatter date = DateTimeFormat.forPattern("yyyy-MM-dd");
         long millis  = date.parseMillis(startingDate);
-        Date dd = new Date(millis);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(millis);
 
-        int multiplier = 0;
-        if (range < 0){
-            multiplier = -1;
-        } else {
-            multiplier = 1;
-        }
+        int multiplier = range < 0 ? -1 : 1;
 
         for (int i = 0; i < range*multiplier; i ++) {
-            dd.setDate(dd.getDate() + 1*multiplier);
+            cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) + (1*multiplier));
+            Date dd = cal.getTime();
             DateFormat par = new SimpleDateFormat("yyyy-MM-dd");
             String fullKey = createKey(state, par.format(dd));
             CasesByDate newData = new CasesByDate(par.format(dd), cases.get(fullKey));
             information.add(newData);
         }
-
 
         return new CovidRangeData(state, information);
     }
