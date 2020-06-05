@@ -7,8 +7,6 @@ import javax.validation.constraints.NotEmpty;
 public class CovidConfig extends Configuration {
     @NotEmpty
     private String template;
-    @NotEmpty
-    private String defaultLocation = "USA";
 
     @JsonProperty
     public String getTemplate(){
@@ -20,13 +18,4 @@ public class CovidConfig extends Configuration {
         this.template = template;
     }
 
-    @JsonProperty
-    public String getDefaultLocation(){
-        return defaultLocation;
-    }
-
-    @JsonProperty
-    public void setDefaultLocation(String state){
-        this.defaultLocation = state;
-    }
 }
