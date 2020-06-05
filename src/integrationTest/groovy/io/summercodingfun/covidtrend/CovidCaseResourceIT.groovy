@@ -35,6 +35,7 @@ class CovidCaseResourceIT extends Specification {
         then: 'server returns 400 code'
         HttpResponseException e = thrown(HttpResponseException)
         assert e.response.status == 400: 'response code should be 400 when state and date are invalid'
+        assert e.response.responseData['message'] == 'state or date is invalid.'
     }
 
     def 'should return 400 code when date is invalid' () {
@@ -48,5 +49,6 @@ class CovidCaseResourceIT extends Specification {
         then: 'server returns 400 code'
         HttpResponseException e = thrown(HttpResponseException)
         assert e.response.status == 400
+        assert e.response.responseData['message'] == 'state or date is invalid.'
     }
 }

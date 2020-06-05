@@ -10,7 +10,7 @@ class CovidRangeDataResourceIT extends Specification{
     @Shared
     def client = new RESTClient("http://localhost:8080")
 
-    def 'should return 200 code when state and starting date are valid'() {
+    def 'should return 200 code when state and starting date are valid and range is negative'() {
         given:
         String location = 'California'
         String startingDate = '2020-06-04'
@@ -34,6 +34,48 @@ class CovidRangeDataResourceIT extends Specification{
         }
     }
 
+    def 'should return 200 code when state and starting date are valid and range is positive'() {
+        given:
+        String location = 'California'
+        String startingDate = '2020-05-04'
+        int range = 3;
+
+        when: 'state and starting date are valid'
+        def response = client.get(path: "/covid-range-data/${location}/${startingDate}/${range}")
+
+        then: 'server returns 200 code'
+        assert response.status == 200: 'response code is 200 when state and starting date are valid'
+        assert response.responseData['state'] == 'California'
+        with (response.responseData.data) {
+            it[0]['date'] == '2020-05-04'
+            it[0]['cases'] == 56333
+            it[1]['date'] == '2020-05-05'
+            it[1]['cases'] == 58848
+            it[2]['date'] == '2020-05-06'
+            it[2]['cases'] == 60787
+            it[3]['date'] == '2020-05-07'
+            it[3]['cases'] == 62481
+        }
+    }
+
+    def 'should return 200 code when state and starting date are valid and range is 0'() {
+        given:
+        String location = 'California'
+        String startingDate = '2020-06-04'
+        int range = 0;
+
+        when: 'state and starting date are valid'
+        def response = client.get(path: "/covid-range-data/${location}/${startingDate}/${range}")
+
+        then: 'server returns 200 code'
+        assert response.status == 200: 'response code is 200 when state and starting date are valid'
+        assert response.responseData['state'] == 'California'
+        with (response.responseData.data) {
+            it[0]['date'] == '2020-06-04'
+            it[0]['cases'] == 122917
+        }
+    }
+
     def 'should return 400 when state is invalid'(){
         given:
         String location = 'CA'
@@ -45,7 +87,8 @@ class CovidRangeDataResourceIT extends Specification{
 
         then: 'server returns 400 code'
         HttpResponseException e = thrown(HttpResponseException)
-        assert e.response.status == 400
+        assert e.response.status == 400 : 'state is invalid'
+        assert e.response.responseData['message'] == 'state, starting date, or range is invalid'
     }
 
     def 'should return 400 when date is invalid'(){
@@ -59,6 +102,37 @@ class CovidRangeDataResourceIT extends Specification{
 
         then: 'server returns 400 code'
         HttpResponseException e = thrown(HttpResponseException)
-        assert e.response.status == 400
+        assert e.response.status == 400 : 'date is invalid'
+        assert e.response.responseData['message'] == 'state, starting date, or range is invalid'
+    }
+
+    def 'should return 400 when range is too low'(){
+        given:
+        String location = 'California'
+        String startingDate = '2020-06-04'
+        int range = -1000;
+
+        when: 'starting range is invalid'
+        client.get(path: "/covid-range-data/${location}/${startingDate}/${range}")
+
+        then: 'server returns 400 code'
+        HttpResponseException e = thrown(HttpResponseException)
+        assert e.response.status == 400 : 'range is too low'
+        assert e.response.responseData['message'] == 'state, starting date, or range is invalid'
+    }
+
+    def 'should return 400 when range is too high'(){
+        given:
+        String location = 'California'
+        String startingDate = '2020-06-04'
+        int range = 1000;
+
+        when: 'starting range is invalid'
+        client.get(path: "/covid-range-data/${location}/${startingDate}/${range}")
+
+        then: 'server returns 400 code'
+        HttpResponseException e = thrown(HttpResponseException)
+        assert e.response.status == 400 : 'range is too high'
+        assert e.response.responseData['message'] == 'state, starting date, or range is invalid'
     }
 }

@@ -33,5 +33,6 @@ class LatestCovidResourceIT extends Specification{
         then: 'server returns 400 code'
         HttpResponseException e = thrown(HttpResponseException)
         assert e.response.status == 400: 'response code is 400 when location is invalid'
+        assert e.response.responseData['message'] == 'Please enter a valid state'
     }
 }
