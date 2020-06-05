@@ -6,10 +6,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -31,23 +28,28 @@ public class CovidRangeDataResource {
     @GET
     @Timed
     public CovidRangeData displayRangeData(@PathParam("location") String state, @PathParam("startingDate") String startingDate, @PathParam("range") int range) throws ParseException {
-        List<CasesByDate> information = new ArrayList<>();
+        String key = createKey(state, startingDate);
+        if (cases.containsKey(key) && deaths.containsKey(key)){
+            List<CasesByDate> information = new ArrayList<>();
 
-        CasesByDate yourData = new CasesByDate(startingDate, cases.get(createKey(state, startingDate)));
-        information.add(yourData);
+            CasesByDate yourData = new CasesByDate(startingDate, cases.get(key));
+            information.add(yourData);
 
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-        long millis  = fmt.parseMillis(startingDate);
+            DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+            long millis  = fmt.parseMillis(startingDate);
 
-        int multiplier = range < 0 ? -1 : 1;
-        DateTime startingDateTime = new DateTime(millis);
+            int multiplier = range < 0 ? -1 : 1;
+            DateTime startingDateTime = new DateTime(millis);
 
-        for (int i = 0; i < range*multiplier; i++){
-            startingDateTime = startingDateTime.plusDays(1*multiplier);
-            CasesByDate newData = new CasesByDate(fmt.print(startingDateTime), cases.get(createKey(state, fmt.print(startingDateTime))));
-            information.add(newData);
+            for (int i = 0; i < range*multiplier; i++){
+                startingDateTime = startingDateTime.plusDays(1*multiplier);
+                CasesByDate newData = new CasesByDate(fmt.print(startingDateTime), cases.get(createKey(state, fmt.print(startingDateTime))));
+                information.add(newData);
+            }
+            return new CovidRangeData(state, information);
+        } else {
+            throw new WebApplicationException("state or starting date is invalid", 400);
         }
-        return new CovidRangeData(state, information);
     }
 
     public static String createKey(String x, String y){

@@ -17,17 +17,17 @@ public class Saying {
     }
 
 
-    @JsonProperty("State")
-    public String getInformation(){
+    @JsonProperty
+    public String getState(){
         return state;
     }
 
-    @JsonProperty("Number of Cases")
+    @JsonProperty
     public int getNumberOfCases() {
         return numberOfCases;
     }
 
-    @JsonProperty("Number of Deaths")
+    @JsonProperty
     public int getNumberOfDeaths(){
         return numberOfDeaths;
     }

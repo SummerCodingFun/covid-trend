@@ -17,12 +17,12 @@ public class CovidRangeData {
         data = d;
     }
 
-    @JsonProperty("State")
+    @JsonProperty
     public String getState(){
         return state;
     }
 
-    @JsonProperty("Data")
+    @JsonProperty
     public List<CasesByDate> getData(){
         return data;
     }

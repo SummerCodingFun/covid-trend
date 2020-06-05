@@ -4,7 +4,7 @@ import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.summercodingfun.covidtrend.resources.CovidRangeDataResource;
-import io.summercodingfun.covidtrend.resources.CovidResource;
+import io.summercodingfun.covidtrend.resources.CovidCaseResource;
 import io.summercodingfun.covidtrend.health.TemplateHealthCheck;
 import io.summercodingfun.covidtrend.resources.LatestCovidResource;
 
@@ -44,13 +44,13 @@ public class CovidApp extends Application<CovidConfig>{
             deaths.put(k, Integer.parseInt(arr[4]));
         }
 
-        final CovidResource resource = new CovidResource(cases, deaths);
+        final CovidCaseResource caseResource = new CovidCaseResource(cases, deaths);
         final CovidRangeDataResource rangeResource = new CovidRangeDataResource(cases, deaths);
         final LatestCovidResource latestResource = new LatestCovidResource(cases, deaths);
         final TemplateHealthCheck healthCheck = new TemplateHealthCheck(config.getTemplate());
 
         env.healthChecks().register("template", healthCheck);
-        env.jersey().register(resource);
+        env.jersey().register(caseResource);
         env.jersey().register(rangeResource);
         env.jersey().register(latestResource);
     }

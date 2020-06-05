@@ -6,10 +6,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.SortedMap;
 
@@ -31,7 +28,13 @@ public class LatestCovidResource {
         DateTime today = new DateTime();
         today = today.plusDays(-1);
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-        return new Saying(state, cases.get(createKey(state, fmt.print(today))), deaths.get(createKey(state, fmt.print(today))));
+
+        String key = createKey(state, fmt.print(today));
+        if (cases.containsKey(key) && deaths.containsKey(key)) {
+            return new Saying(state, cases.get(key), deaths.get(key));
+        } else {
+            throw new WebApplicationException("Please enter a valid state", 400);
+        }
     }
 
     public static String createKey(String x, String y){
