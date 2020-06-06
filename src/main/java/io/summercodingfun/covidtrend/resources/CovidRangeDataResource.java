@@ -8,7 +8,6 @@ import org.joda.time.format.DateTimeFormatter;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.List;
@@ -27,30 +26,36 @@ public class CovidRangeDataResource {
 
     @GET
     @Timed
-    public CovidRangeData displayRangeData(@PathParam("location") String state, @PathParam("startingDate") String startingDate, @PathParam("range") int range) {
-        String key = createKey(state, startingDate);
-        System.out.println(cases.size());
-        int positiveRange = range < 0 ? range*-1: range;
-        if (cases.containsKey(key) && deaths.containsKey(key) && positiveRange < cases.size()/50){
-            List<CasesByDate> information = new ArrayList<>();
+    public CovidRangeData displayRangeData(@PathParam("location") String state, @PathParam("startingDate") String startingDate, @PathParam("range") String range) {
+        try {
+            String key = createKey(state, startingDate);
+            System.out.println(cases.size());
+            int r = Integer.parseInt(range);
+            int positiveRange = r < 0 ? r * -1 : r;
+            if (cases.containsKey(key) && deaths.containsKey(key) && positiveRange < cases.size() / 50) {
+                List<CasesAndDeathsByDate> information = new ArrayList<>();
 
-            CasesByDate yourData = new CasesByDate(startingDate, cases.get(key));
-            information.add(yourData);
+                CasesAndDeathsByDate yourData = new CasesAndDeathsByDate(startingDate, cases.get(key), deaths.get(key));
+                information.add(yourData);
 
-            DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-            long millis  = fmt.parseMillis(startingDate);
+                DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+                long millis = fmt.parseMillis(startingDate);
 
-            int multiplier = range < 0 ? -1 : 1;
-            DateTime startingDateTime = new DateTime(millis);
+                int multiplier = r < 0 ? -1 : 1;
+                DateTime startingDateTime = new DateTime(millis);
 
-            for (int i = 0; i < range*multiplier; i++){
-                startingDateTime = startingDateTime.plusDays(1*multiplier);
-                CasesByDate newData = new CasesByDate(fmt.print(startingDateTime), cases.get(createKey(state, fmt.print(startingDateTime))));
-                information.add(newData);
+                for (int i = 0; i < r * multiplier; i++) {
+                    startingDateTime = startingDateTime.plusDays(1 * multiplier);
+                    String key1 = createKey(state, fmt.print(startingDateTime));
+                    CasesAndDeathsByDate newData = new CasesAndDeathsByDate(fmt.print(startingDateTime), cases.get(key1), deaths.get(key1));
+                    information.add(newData);
+                }
+                return new CovidRangeData(state, information);
+            } else {
+                throw new WebApplicationException("state, starting date, or range is invalid", 400);
             }
-            return new CovidRangeData(state, information);
-        } else {
-            throw new WebApplicationException("state, starting date, or range is invalid", 400);
+        } catch (Exception e) {
+            throw new WebApplicationException("range must be a number", 400);
         }
     }
 

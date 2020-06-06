@@ -25,12 +25,16 @@ class CovidRangeDataResourceIT extends Specification{
         with (response.responseData.data) {
             it[0]['date'] == '2020-06-04'
             it[0]['cases'] == 122917
+            it[0]['deaths'] == 4484
             it[1]['date'] == '2020-06-03'
             it[1]['cases'] == 120407
+            it[1]['deaths'] == 4422
             it[2]['date'] == '2020-06-02'
             it[2]['cases'] == 118081
+            it[2]['deaths'] == 4360
             it[3]['date'] == '2020-06-01'
             it[3]['cases'] == 115643
+            it[3]['deaths'] == 4287
         }
     }
 
@@ -49,12 +53,16 @@ class CovidRangeDataResourceIT extends Specification{
         with (response.responseData.data) {
             it[0]['date'] == '2020-05-04'
             it[0]['cases'] == 56333
+            it[0]['deaths'] == 2297
             it[1]['date'] == '2020-05-05'
             it[1]['cases'] == 58848
+            it[1]['deaths'] == 2386
             it[2]['date'] == '2020-05-06'
             it[2]['cases'] == 60787
+            it[2]['deaths'] == 2478
             it[3]['date'] == '2020-05-07'
             it[3]['cases'] == 62481
+            it[3]['deaths'] == 2561
         }
     }
 
@@ -73,6 +81,7 @@ class CovidRangeDataResourceIT extends Specification{
         with (response.responseData.data) {
             it[0]['date'] == '2020-06-04'
             it[0]['cases'] == 122917
+            it[0]['deaths'] == 4484
         }
     }
 
@@ -134,5 +143,20 @@ class CovidRangeDataResourceIT extends Specification{
         HttpResponseException e = thrown(HttpResponseException)
         assert e.response.status == 400 : 'range is too high'
         assert e.response.responseData['message'] == 'state, starting date, or range is invalid'
+    }
+
+    def 'should return 400 when range is not a number'(){
+        given:
+        String location = 'California'
+        String startingDate = '2020-06-04'
+        String range = "apples";
+
+        when: 'starting range is not a number'
+        client.get(path: "/covid-range-data/${location}/${startingDate}/${range}")
+
+        then: 'server returns 400 code'
+        HttpResponseException e = thrown(HttpResponseException)
+        assert e.response.status == 400 : 'range must be a number'
+        assert e.response.responseData['message'] == 'range must be a number'
     }
 }
