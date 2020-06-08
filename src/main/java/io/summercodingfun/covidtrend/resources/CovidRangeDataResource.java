@@ -26,10 +26,9 @@ public class CovidRangeDataResource {
 
     @GET
     @Timed
-    public CovidRangeData displayRangeData(@PathParam("location") String state, @PathParam("startingDate") String startingDate, @PathParam("range") String range) {
+    public CovidRangeData displayRangeData(@PathParam("location") String state, @PathParam("startingDate") String startingDate, @PathParam("range") String range){
         try {
             String key = createKey(state, startingDate);
-            System.out.println(cases.size());
             int r = Integer.parseInt(range);
             int positiveRange = r < 0 ? r * -1 : r;
             if (cases.containsKey(key) && deaths.containsKey(key) && positiveRange < cases.size() / 50) {
@@ -52,10 +51,14 @@ public class CovidRangeDataResource {
                 }
                 return new CovidRangeData(state, information);
             } else {
-                throw new WebApplicationException("state, starting date, or range is invalid", 400);
+                throw new WebApplicationException();
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             throw new WebApplicationException("range must be a number", 400);
+        } catch (WebApplicationException e){
+            throw new WebApplicationException("state, starting date, or range is invalid", 400);
+        } catch (Exception e) {
+            throw new WebApplicationException("there was an error", 500);
         }
     }
 
