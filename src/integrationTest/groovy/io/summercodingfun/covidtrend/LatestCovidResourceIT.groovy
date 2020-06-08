@@ -18,8 +18,8 @@ class LatestCovidResourceIT extends Specification{
 
         then: 'server returns with 200 code'
         assert response.status == 200 : 'response is 200 when state is valid'
-        assert response.responseData['numberOfCases'] == 122917
-        assert response.responseData['numberOfDeaths'] == 4484
+        assert response.responseData['numberOfCases'] == 131997
+        assert response.responseData['numberOfDeaths'] == 4653
         assert response.responseData['state'] == 'California'
     }
 
