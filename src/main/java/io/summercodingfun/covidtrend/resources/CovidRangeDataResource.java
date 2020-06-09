@@ -18,10 +18,12 @@ import java.util.List;
 public class CovidRangeDataResource {
     private final SortedMap<String, Integer> cases;
     private final SortedMap<String, Integer> deaths;
+    private final SortedMap<String, MinAndMaxDateByState> minAndMax;
 
-    public CovidRangeDataResource(SortedMap<String, Integer> cases, SortedMap<String, Integer> deaths) {
+    public CovidRangeDataResource(SortedMap<String, Integer> cases, SortedMap<String, Integer> deaths, SortedMap<String, MinAndMaxDateByState> minAndMax) {
         this.cases = cases;
         this.deaths = deaths;
+        this.minAndMax = minAndMax;
     }
 
     @GET
@@ -33,17 +35,18 @@ public class CovidRangeDataResource {
         } catch (NumberFormatException e) {
             throw new WebApplicationException("range must be a number", 400);
         }
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+        long millis = fmt.parseMillis(startingDate);
+        DateTime theRange = new DateTime(millis);
+        theRange = theRange.plusDays(r);
 
         String key = createKey(state, startingDate);
-        int positiveRange = r < 0 ? r * -1 : r;
-        if (cases.containsKey(key) && deaths.containsKey(key) && positiveRange < cases.size() / 50) {
+
+        if (cases.containsKey(key) && deaths.containsKey(key) && theRange.isBefore(minAndMax.get(state).getMaxDate()) && theRange.isAfter(minAndMax.get(state).getMinDate())) {
             List<CasesAndDeathsByDate> information = new ArrayList<>();
 
             CasesAndDeathsByDate yourData = new CasesAndDeathsByDate(startingDate, cases.get(key), deaths.get(key));
             information.add(yourData);
-
-            DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-            long millis = fmt.parseMillis(startingDate);
 
             int multiplier = r < 0 ? -1 : 1;
             DateTime startingDateTime = new DateTime(millis);

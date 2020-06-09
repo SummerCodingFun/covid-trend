@@ -9,7 +9,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import javax.validation.constraints.Min;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -69,8 +68,8 @@ public class CovidApp extends Application<CovidConfig>{
         }
 
         final CovidCaseResource caseResource = new CovidCaseResource(cases, deaths);
-        final CovidRangeDataResource rangeResource = new CovidRangeDataResource(cases, deaths);
-        final LatestCovidResource latestResource = new LatestCovidResource(cases, deaths, maxDate);
+        final CovidRangeDataResource rangeResource = new CovidRangeDataResource(cases, deaths, minAndMax);
+        final LatestCovidResource latestResource = new LatestCovidResource(cases, deaths, minAndMax);
         final CovidCasesTrendResource casesTrendResource = new CovidCasesTrendResource(cases, minAndMax);
         final TemplateHealthCheck healthCheck = new TemplateHealthCheck(config.getTemplate());
 

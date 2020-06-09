@@ -16,19 +16,19 @@ import java.util.SortedMap;
 public class LatestCovidResource {
     private final SortedMap<String, Integer> cases;
     private final SortedMap<String, Integer> deaths;
-    private final DateTime maxDate;
+    private final SortedMap<String, MinAndMaxDateByState> minAndMax;
 
-    public LatestCovidResource(SortedMap<String, Integer> cases, SortedMap<String, Integer> deaths, DateTime md){
+    public LatestCovidResource(SortedMap<String, Integer> cases, SortedMap<String, Integer> deaths, SortedMap<String, MinAndMaxDateByState> minAndMax){
         this.cases = cases;
         this.deaths = deaths;
-        this.maxDate = md;
+        this.minAndMax = minAndMax;
     }
 
     @GET
     @Timed
     public Saying displayStateData(@PathParam("location") String state) {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-        String key = createKey(state, fmt.print(maxDate));
+        String key = createKey(state, fmt.print(minAndMax.get(state).getMaxDate()));
         if (cases.containsKey(key) && deaths.containsKey(key)) {
             return new Saying(state, cases.get(key), deaths.get(key));
         } else {
