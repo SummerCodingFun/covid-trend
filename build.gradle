@@ -14,9 +14,9 @@ repositories{
 
 dependencies {
   compile group: 'io.dropwizard', name: 'dropwizard-core', version: dropwizardVersion
-  compile group: 'org.javatuples', name: 'javatuples', version: '1.2'
   compile group: 'joda-time', name: 'joda-time', version: '2.10.6'
   compile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
+  compile group: 'org.jfree', name: 'jfreechart', version: '1.5.0'
 
   testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
   testCompile group: 'io.rest-assured', name: 'rest-assured', version : '4.2.0'

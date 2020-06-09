@@ -1,19 +1,21 @@
 package io.summercodingfun.covidtrend.resources;
 
+import org.joda.time.DateTime;
 
 public class CasesByDate {
-    private final String date;
-    private final Integer cases;
+    public final int cases;
+    public final DateTime date;
 
-    public CasesByDate(String d, Integer c){
-        this.date = d;
-        this.cases = c;
+    public CasesByDate(int cases, DateTime date){
+        this.cases = cases;
+        this.date = date;
     }
 
-    public String getDate(){
+    public DateTime getDate(){
         return date;
     }
-    public Integer getCases(){
+    public int getCases(){
         return cases;
     }
+
 }
