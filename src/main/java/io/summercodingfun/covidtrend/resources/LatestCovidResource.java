@@ -28,12 +28,13 @@ public class LatestCovidResource {
     @Timed
     public Saying displayStateData(@PathParam("location") String state) {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-        String key = createKey(state, fmt.print(minAndMax.get(state).getMaxDate()));
-        if (cases.containsKey(key) && deaths.containsKey(key)) {
-            return new Saying(state, cases.get(key), deaths.get(key));
-        } else {
+        if (!minAndMax.containsKey(state)) {
             throw new WebApplicationException("Please enter a valid state", 400);
         }
+        String date = fmt.print(minAndMax.get(state).getMaxDate());
+        String key = createKey(state, date);
+        System.out.println(key);
+        return new Saying(state, cases.get(key), deaths.get(key));
     }
 
     public static String createKey(String x, String y){

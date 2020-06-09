@@ -35,13 +35,15 @@ public class CovidRangeDataResource {
         } catch (NumberFormatException e) {
             throw new WebApplicationException("range must be a number", 400);
         }
+
+        if (!minAndMax.containsKey(state)) {
+            throw new WebApplicationException("Please enter a valid state", 400);
+        }
+        String key = createKey(state, startingDate);
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
         long millis = fmt.parseMillis(startingDate);
         DateTime theRange = new DateTime(millis);
         theRange = theRange.plusDays(r);
-
-        String key = createKey(state, startingDate);
-
         if (cases.containsKey(key) && deaths.containsKey(key) && theRange.isBefore(minAndMax.get(state).getMaxDate()) && theRange.isAfter(minAndMax.get(state).getMinDate())) {
             List<CasesAndDeathsByDate> information = new ArrayList<>();
 
@@ -49,6 +51,7 @@ public class CovidRangeDataResource {
             information.add(yourData);
 
             int multiplier = r < 0 ? -1 : 1;
+
             DateTime startingDateTime = new DateTime(millis);
 
             for (int i = 0; i < r * multiplier; i++) {
