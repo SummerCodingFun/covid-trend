@@ -11,23 +11,22 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.SortedMap;
-import java.util.List;
 
 @Path("/covid-cases-trend/{location}")
 @Produces("image/png")
 
 public class CovidCasesTrendResource {
     private final SortedMap<String, Integer> cases;
-    private final DateTime maxDate;
+    private final SortedMap<String, MinAndMaxDateByState> minAndMaxDate;
 
-    public CovidCasesTrendResource(SortedMap<String, Integer> cases, DateTime md) {
+    public CovidCasesTrendResource(SortedMap<String, Integer> cases, SortedMap<String, MinAndMaxDateByState> md) {
         this.cases = cases;
-        this.maxDate = md;
+        this.minAndMaxDate = md;
     }
 
     @GET
@@ -35,7 +34,7 @@ public class CovidCasesTrendResource {
     public StreamingOutput displayTrend(@PathParam("location") String state) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         JFreeChart chart = getChart(state);
-        ChartUtils.writeChartAsPNG(outputStream, chart, 500, 350);
+        ChartUtils.writeChartAsPNG(outputStream, chart, 700, 467);
         StreamingOutput streamingOutput = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
@@ -46,35 +45,28 @@ public class CovidCasesTrendResource {
     }
 
     public JFreeChart getChart(String state){
-        List<Integer> list = new ArrayList<>();
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-        DateTime date2 = new DateTime(maxDate);
-        String key2 = createKey(state, fmt.print(maxDate));
-
-        while (cases.get(key2) != null){
-            list.add(cases.get(key2));
-            date2 = date2.minusDays(1);
-            key2 = createKey(state, fmt.print(date2));
-        }
         var series = new XYSeries("Cases");
-        DateTime date = new DateTime(maxDate);
-        DateTimeFormatter fmt2 = DateTimeFormat.forPattern("yyyyMMdd");
+        DateTime minDate = minAndMaxDate.get(state).getMinDate();
+        DateTime maxDate = minAndMaxDate.get(state).getMaxDate();
+        DateTime date = new DateTime(minDate);
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+        DateTimeFormatter fmt2 = DateTimeFormat.forPattern("MM-dd-yyyy");
         String key = createKey(state, fmt.print(date));
 
-        int i = list.size();
+        int i = 0;
         while(cases.get(key) != null) {
             series.add(Double.valueOf(i), Double.valueOf(cases.get(key)));
-            date = date.minusDays(1);
+            date = date.plusDays(1);
             key = createKey(state, fmt.print(date));
-            i--;
+            i++;
         }
 
         var dataset = new XYSeriesCollection();
         dataset.addSeries(series);
 
         JFreeChart chart = ChartFactory.createXYLineChart(
-                String.format("%s Cases Trend from Jan 1 to June 7", state),
-                "Date",
+                String.format("%s Cases Trend from %s to %s", state, fmt2.print(minDate), fmt2.print(maxDate)),
+                "Days",
                 "Number of Cases",
                 dataset,
                 PlotOrientation.VERTICAL,
