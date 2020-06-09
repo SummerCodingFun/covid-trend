@@ -71,6 +71,7 @@ public class CovidApp extends Application<CovidConfig>{
         final CovidRangeDataResource rangeResource = new CovidRangeDataResource(cases, deaths, minAndMax);
         final LatestCovidResource latestResource = new LatestCovidResource(cases, deaths, minAndMax);
         final CovidCasesTrendResource casesTrendResource = new CovidCasesTrendResource(cases, minAndMax);
+        final CovidCasesChangeResource changeResource = new CovidCasesChangeResource(cases, minAndMax);
         final TemplateHealthCheck healthCheck = new TemplateHealthCheck(config.getTemplate());
 
         env.healthChecks().register("template", healthCheck);
@@ -78,6 +79,7 @@ public class CovidApp extends Application<CovidConfig>{
         env.jersey().register(rangeResource);
         env.jersey().register(latestResource);
         env.jersey().register(casesTrendResource);
+        env.jersey().register(changeResource);
     }
     public String createKey(String x, String y){
         return x + ":" + y;
