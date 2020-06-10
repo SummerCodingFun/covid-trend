@@ -39,9 +39,6 @@ public class CovidApp extends Application<CovidConfig>{
         BufferedReader reader = new BufferedReader(new FileReader("us-states.csv"));
         String line = null;
         reader.readLine();
-        DateTime maxDate = new DateTime(Long.MIN_VALUE);
-        DateTime minDate = new DateTime(Long.MAX_VALUE);
-        System.out.println(minDate);
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
 
         while((line = reader.readLine()) != null){
@@ -51,13 +48,9 @@ public class CovidApp extends Application<CovidConfig>{
             deaths.put(k, Integer.parseInt(arr[4]));
 
             long millis = fmt.parseMillis(arr[0]);
-            if(maxDate.isBefore(millis)) {
-                maxDate = new DateTime(millis);
-            }
-            minDate = new DateTime(millis);
 
             if(!minAndMax.containsKey(arr[1])) {
-                MinAndMaxDateByState yourData = new MinAndMaxDateByState(minDate, maxDate);
+                MinAndMaxDateByState yourData = new MinAndMaxDateByState(new DateTime(millis), new DateTime(millis));
                 minAndMax.put(arr[1], yourData);
             } else {
                 MinAndMaxDateByState temp = minAndMax.get(arr[1]);
