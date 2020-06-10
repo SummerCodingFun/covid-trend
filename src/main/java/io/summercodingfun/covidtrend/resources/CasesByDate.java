@@ -3,8 +3,8 @@ package io.summercodingfun.covidtrend.resources;
 import org.joda.time.DateTime;
 
 public class CasesByDate {
-    public final int cases;
-    public final DateTime date;
+    private final int cases;
+    private final DateTime date;
 
     public CasesByDate(int cases, DateTime date){
         this.cases = cases;

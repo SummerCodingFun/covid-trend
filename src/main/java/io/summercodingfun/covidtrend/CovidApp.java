@@ -39,13 +39,14 @@ public class CovidApp extends Application<CovidConfig>{
         BufferedReader reader = new BufferedReader(new FileReader("us-states.csv"));
         String line = null;
         reader.readLine();
-        DateTime maxDate = new DateTime(2020, 1, 1, 0, 0);
-        DateTime minDate = new DateTime();
+        DateTime maxDate = new DateTime(Long.MIN_VALUE);
+        DateTime minDate = new DateTime(Long.MAX_VALUE);
+        System.out.println(minDate);
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
 
         while((line = reader.readLine()) != null){
             String[] arr = line.split(",");
-            String k = createKey(arr[1], arr[0]);
+            String k = Util.createKey(arr[1], arr[0]);
             cases.put(k, Integer.parseInt(arr[3]));
             deaths.put(k, Integer.parseInt(arr[4]));
 
@@ -58,11 +59,13 @@ public class CovidApp extends Application<CovidConfig>{
             if(!minAndMax.containsKey(arr[1])) {
                 MinAndMaxDateByState yourData = new MinAndMaxDateByState(minDate, maxDate);
                 minAndMax.put(arr[1], yourData);
-            }
-            if(minAndMax.containsKey(arr[1])) {
+            } else {
                 MinAndMaxDateByState temp = minAndMax.get(arr[1]);
                 if(temp.getMaxDate().isBefore(millis)) {
                     minAndMax.get(arr[1]).setMaxDate(new DateTime(millis));
+                }
+                if(temp.getMinDate().isAfter(millis)){
+                    minAndMax.get(arr[1]).setMinDate(new DateTime(millis));
                 }
             }
         }
@@ -80,8 +83,5 @@ public class CovidApp extends Application<CovidConfig>{
         env.jersey().register(latestResource);
         env.jersey().register(casesTrendResource);
         env.jersey().register(changeResource);
-    }
-    public String createKey(String x, String y){
-        return x + ":" + y;
     }
 }

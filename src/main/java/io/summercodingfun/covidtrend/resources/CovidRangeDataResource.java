@@ -39,7 +39,7 @@ public class CovidRangeDataResource {
         if (!minAndMax.containsKey(state)) {
             throw new WebApplicationException("Please enter a valid state", 400);
         }
-        String key = createKey(state, startingDate);
+        String key = Util.createKey(state, startingDate);
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
         long millis = fmt.parseMillis(startingDate);
         DateTime theRange = new DateTime(millis);
@@ -56,7 +56,7 @@ public class CovidRangeDataResource {
 
             for (int i = 0; i < r * multiplier; i++) {
                 startingDateTime = startingDateTime.plusDays(1 * multiplier);
-                String key1 = createKey(state, fmt.print(startingDateTime));
+                String key1 = Util.createKey(state, fmt.print(startingDateTime));
                 CasesAndDeathsByDate newData = new CasesAndDeathsByDate(fmt.print(startingDateTime), cases.get(key1), deaths.get(key1));
                 information.add(newData);
             }
@@ -66,7 +66,4 @@ public class CovidRangeDataResource {
         }
     }
 
-    public static String createKey(String x, String y){
-        return x + ":" + y;
-    }
 }

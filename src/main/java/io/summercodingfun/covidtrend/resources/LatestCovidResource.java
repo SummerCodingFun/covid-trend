@@ -2,7 +2,6 @@ package io.summercodingfun.covidtrend.resources;
 
 import io.summercodingfun.covidtrend.api.Saying;
 import com.codahale.metrics.annotation.Timed;
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -32,12 +31,9 @@ public class LatestCovidResource {
             throw new WebApplicationException("Please enter a valid state", 400);
         }
         String date = fmt.print(minAndMax.get(state).getMaxDate());
-        String key = createKey(state, date);
-        System.out.println(key);
+        String key = Util.createKey(state, date);
         return new Saying(state, cases.get(key), deaths.get(key));
     }
 
-    public static String createKey(String x, String y){
-        return x + ":" + y;
-    }
+
 }

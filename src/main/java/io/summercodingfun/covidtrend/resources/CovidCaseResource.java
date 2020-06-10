@@ -22,7 +22,7 @@ public class CovidCaseResource {
     @GET
     @Timed
     public Saying displayStateData(@PathParam("location") String state, @PathParam("date") String date) {
-        String key = createKey(state, date);
+        String key = Util.createKey(state, date);
 
         if (cases.containsKey(key) && deaths.containsKey(key)) {
             return new Saying(state, cases.get(key), deaths.get(key));
@@ -31,7 +31,4 @@ public class CovidCaseResource {
         }
     }
 
-    public static String createKey(String x, String y){
-        return x + ":" + y;
-    }
 }
