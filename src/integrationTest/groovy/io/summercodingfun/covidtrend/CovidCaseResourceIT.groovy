@@ -41,7 +41,7 @@ class CovidCaseResourceIT extends Specification {
     def 'should return 400 code when date is invalid' () {
         given:
         String location = 'California'
-        String date = '123-4502'
+        String date = '2019-01-01'
 
         when: 'date is invalid'
         client.get(path: "/covid-cases/${location}/${date}")

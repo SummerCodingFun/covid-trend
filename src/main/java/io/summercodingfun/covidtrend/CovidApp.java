@@ -11,7 +11,6 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -31,9 +30,7 @@ public class CovidApp extends Application<CovidConfig>{
     }
 
     @Override
-    public void run(CovidConfig config, Environment env)  throws IOException {
-        SortedMap<String, Integer> cases = new TreeMap<>();
-        SortedMap<String, Integer> deaths = new TreeMap<>();
+    public void run(CovidConfig config, Environment env)  throws Exception {
         SortedMap<String, MinAndMaxDateByState> minAndMax = new TreeMap<>();
 
         BufferedReader reader = new BufferedReader(new FileReader("us-states.csv"));
@@ -44,8 +41,6 @@ public class CovidApp extends Application<CovidConfig>{
         while((line = reader.readLine()) != null) {
             String[] arr = line.split(",");
             String k = Util.createKey(arr[1], arr[0]);
-            cases.put(k, Integer.parseInt(arr[3]));
-            deaths.put(k, Integer.parseInt(arr[4]));
 
             long millis = fmt.parseMillis(arr[0]);
 
@@ -63,11 +58,11 @@ public class CovidApp extends Application<CovidConfig>{
             }
         }
 
-        final CovidCaseResource caseResource = new CovidCaseResource(cases, deaths);
-        final CovidRangeDataResource rangeResource = new CovidRangeDataResource(cases, deaths, minAndMax);
-        final LatestCovidResource latestResource = new LatestCovidResource(cases, deaths, minAndMax);
-        final CovidCasesTrendResource casesTrendResource = new CovidCasesTrendResource(cases, minAndMax);
-        final CovidCasesChangeResource changeResource = new CovidCasesChangeResource(cases, minAndMax);
+        final CovidCaseResource caseResource = new CovidCaseResource(minAndMax);
+        final CovidRangeDataResource rangeResource = new CovidRangeDataResource(minAndMax);
+        final LatestCovidResource latestResource = new LatestCovidResource(minAndMax);
+        final CovidCasesTrendResource casesTrendResource = new CovidCasesTrendResource(minAndMax);
+        final CovidCasesChangeResource changeResource = new CovidCasesChangeResource(minAndMax);
         final TemplateHealthCheck healthCheck = new TemplateHealthCheck(config.getTemplate());
 
         env.healthChecks().register("template", healthCheck);
