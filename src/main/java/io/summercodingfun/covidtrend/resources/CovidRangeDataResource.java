@@ -18,10 +18,12 @@ import java.util.List;
 public class CovidRangeDataResource {
     private final SortedMap<String, Integer> cases;
     private final SortedMap<String, Integer> deaths;
+    private final SortedMap<String, MinAndMaxDateByState> minAndMax;
 
-    public CovidRangeDataResource(SortedMap<String, Integer> cases, SortedMap<String, Integer> deaths) {
+    public CovidRangeDataResource(SortedMap<String, Integer> cases, SortedMap<String, Integer> deaths, SortedMap<String, MinAndMaxDateByState> minAndMax) {
         this.cases = cases;
         this.deaths = deaths;
+        this.minAndMax = minAndMax;
     }
 
     @GET
@@ -34,23 +36,27 @@ public class CovidRangeDataResource {
             throw new WebApplicationException("range must be a number", 400);
         }
 
-        String key = createKey(state, startingDate);
-        int positiveRange = r < 0 ? r * -1 : r;
-        if (cases.containsKey(key) && deaths.containsKey(key) && positiveRange < cases.size() / 50) {
+        if (!minAndMax.containsKey(state)) {
+            throw new WebApplicationException("Please enter a valid state", 400);
+        }
+        String key = Util.createKey(state, startingDate);
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+        long millis = fmt.parseMillis(startingDate);
+        DateTime theRange = new DateTime(millis);
+        theRange = theRange.plusDays(r);
+        if (cases.containsKey(key) && deaths.containsKey(key) && theRange.isBefore(minAndMax.get(state).getMaxDate()) && theRange.isAfter(minAndMax.get(state).getMinDate())) {
             List<CasesAndDeathsByDate> information = new ArrayList<>();
 
             CasesAndDeathsByDate yourData = new CasesAndDeathsByDate(startingDate, cases.get(key), deaths.get(key));
             information.add(yourData);
 
-            DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-            long millis = fmt.parseMillis(startingDate);
-
             int multiplier = r < 0 ? -1 : 1;
+
             DateTime startingDateTime = new DateTime(millis);
 
             for (int i = 0; i < r * multiplier; i++) {
                 startingDateTime = startingDateTime.plusDays(1 * multiplier);
-                String key1 = createKey(state, fmt.print(startingDateTime));
+                String key1 = Util.createKey(state, fmt.print(startingDateTime));
                 CasesAndDeathsByDate newData = new CasesAndDeathsByDate(fmt.print(startingDateTime), cases.get(key1), deaths.get(key1));
                 information.add(newData);
             }
@@ -60,7 +66,4 @@ public class CovidRangeDataResource {
         }
     }
 
-    public static String createKey(String x, String y){
-        return x + ":" + y;
-    }
 }

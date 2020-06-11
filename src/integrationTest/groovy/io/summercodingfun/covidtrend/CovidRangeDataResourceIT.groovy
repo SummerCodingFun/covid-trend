@@ -97,13 +97,13 @@ class CovidRangeDataResourceIT extends Specification{
         then: 'server returns 400 code'
         HttpResponseException e = thrown(HttpResponseException)
         assert e.response.status == 400 : 'state is invalid'
-        assert e.response.responseData['message'] == 'state, starting date, or range is invalid'
+        assert e.response.responseData['message'] == 'Please enter a valid state'
     }
 
     def 'should return 400 when date is invalid'(){
         given:
         String location = 'California'
-        String startingDate = '06-04-2020'
+        String startingDate = '2020-1-01'
         int range = -3;
 
         when: 'starting date is invalid'
