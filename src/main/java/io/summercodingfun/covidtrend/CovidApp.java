@@ -41,7 +41,7 @@ public class CovidApp extends Application<CovidConfig>{
         reader.readLine();
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
 
-        while((line = reader.readLine()) != null){
+        while((line = reader.readLine()) != null) {
             String[] arr = line.split(",");
             String k = Util.createKey(arr[1], arr[0]);
             cases.put(k, Integer.parseInt(arr[3]));
@@ -57,7 +57,7 @@ public class CovidApp extends Application<CovidConfig>{
                 if(temp.getMaxDate().isBefore(millis)) {
                     minAndMax.get(arr[1]).setMaxDate(new DateTime(millis));
                 }
-                if(temp.getMinDate().isAfter(millis)){
+                if(temp.getMinDate().isAfter(millis)) {
                     minAndMax.get(arr[1]).setMinDate(new DateTime(millis));
                 }
             }
