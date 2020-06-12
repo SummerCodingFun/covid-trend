@@ -14,36 +14,44 @@ import org.jfree.data.xy.XYSeriesCollection;
 import javax.ws.rs.*;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
-import java.util.SortedMap;
+import java.sql.Connection;
 
 @Path("/covid-cases-trend/{location}")
 @Produces("image/png")
 
 public class CovidCasesTrendResource {
-    private final SortedMap<String, MinAndMaxDateByState> minAndMaxDate;
 
-    public CovidCasesTrendResource(SortedMap<String, MinAndMaxDateByState> md) throws Exception {
-        this.minAndMaxDate = md;
+    public CovidCasesTrendResource() {
     }
 
     @GET
     @Timed
     public StreamingOutput displayTrend(@PathParam("location") String state) throws Exception {
         var series = new XYSeries("Cases");
-        DateTime minDate = minAndMaxDate.get(state).getMinDate();
-        DateTime maxDate = minAndMaxDate.get(state).getMaxDate();
-        DateTime date = new DateTime(minDate);
+        DateTime minDate = new DateTime();
+        DateTime maxDate = new DateTime();
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
         DateTimeFormatter fmt2 = DateTimeFormat.forPattern("MM-dd-yyyy");
-        ConnectionUtil c = new ConnectionUtil();
 
-        int i = 0;
-        while(date.isBefore(maxDate)) {
-            series.add(Double.valueOf(i), Double.valueOf(c.getCases(state,fmt.print(date))));
-            date = date.plusDays(1);
-            i++;
+        ConnectionPool pool = new ConnectionPool("jdbc:mysql://localhost:3306/covid_data?characterEncoding=latin1", "root", "Ye11owstone", 10);
+        Connection conn = null;
+
+        try {
+            conn = pool.getConnection();
+            minDate = ConnectionUtil.getMinDate(conn, state);
+            maxDate = ConnectionUtil.getMaxDate(conn, state);
+            DateTime date = new DateTime(minDate);
+            int i = 0;
+            while(date.isBefore(maxDate)) {
+                series.add(Double.valueOf(i), Double.valueOf(ConnectionUtil.getCases(conn, state, fmt.print(date))));
+                date = date.plusDays(1);
+                i++;
+            }
+        } finally {
+            if (conn != null) {
+                pool.returnConnection(conn);
+            }
         }
-        c.close();
 
         var dataset = new XYSeriesCollection();
         dataset.addSeries(series);

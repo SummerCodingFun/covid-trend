@@ -5,17 +5,8 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.summercodingfun.covidtrend.resources.*;
 import io.summercodingfun.covidtrend.health.TemplateHealthCheck;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-
-public class CovidApp extends Application<CovidConfig>{
+public class CovidApp extends Application<CovidConfig> {
     public static void main(String[] args) throws Exception {
         new CovidApp().run(args);
     }
@@ -26,43 +17,17 @@ public class CovidApp extends Application<CovidConfig>{
     }
 
     @Override
-    public void initialize(Bootstrap<CovidConfig> bootstrap){
+    public void initialize(Bootstrap<CovidConfig> bootstrap) {
     }
 
     @Override
-    public void run(CovidConfig config, Environment env)  throws Exception {
-        SortedMap<String, MinAndMaxDateByState> minAndMax = new TreeMap<>();
+    public void run(CovidConfig config, Environment env) throws Exception {
 
-        BufferedReader reader = new BufferedReader(new FileReader("us-states.csv"));
-        String line = null;
-        reader.readLine();
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-
-        while((line = reader.readLine()) != null) {
-            String[] arr = line.split(",");
-            String k = Util.createKey(arr[1], arr[0]);
-
-            long millis = fmt.parseMillis(arr[0]);
-
-            if(!minAndMax.containsKey(arr[1])) {
-                MinAndMaxDateByState yourData = new MinAndMaxDateByState(new DateTime(millis), new DateTime(millis));
-                minAndMax.put(arr[1], yourData);
-            } else {
-                MinAndMaxDateByState temp = minAndMax.get(arr[1]);
-                if(temp.getMaxDate().isBefore(millis)) {
-                    minAndMax.get(arr[1]).setMaxDate(new DateTime(millis));
-                }
-                if(temp.getMinDate().isAfter(millis)) {
-                    minAndMax.get(arr[1]).setMinDate(new DateTime(millis));
-                }
-            }
-        }
-
-        final CovidCaseResource caseResource = new CovidCaseResource(minAndMax);
-        final CovidRangeDataResource rangeResource = new CovidRangeDataResource(minAndMax);
-        final LatestCovidResource latestResource = new LatestCovidResource(minAndMax);
-        final CovidCasesTrendResource casesTrendResource = new CovidCasesTrendResource(minAndMax);
-        final CovidCasesChangeResource changeResource = new CovidCasesChangeResource(minAndMax);
+        final CovidCaseResource caseResource = new CovidCaseResource();
+        final CovidRangeDataResource rangeResource = new CovidRangeDataResource();
+        final LatestCovidResource latestResource = new LatestCovidResource();
+        final CovidCasesTrendResource casesTrendResource = new CovidCasesTrendResource();
+        final CovidCasesChangeResource changeResource = new CovidCasesChangeResource();
         final TemplateHealthCheck healthCheck = new TemplateHealthCheck(config.getTemplate());
 
         env.healthChecks().register("template", healthCheck);

@@ -2,39 +2,55 @@ package io.summercodingfun.covidtrend.resources;
 
 import io.summercodingfun.covidtrend.api.Saying;
 import com.codahale.metrics.annotation.Timed;
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.SortedMap;
+import java.sql.Connection;
+
 
 @Path("/covid-cases/{location}/{date}")
 @Produces(MediaType.APPLICATION_JSON)
 
 public class CovidCaseResource {
-    private final SortedMap<String, MinAndMaxDateByState> minAndMax;
 
-    public CovidCaseResource(SortedMap<String, MinAndMaxDateByState> minAndMax){
-        this.minAndMax = minAndMax;
+    public CovidCaseResource(){
     }
 
     @GET
     @Timed
     public Saying displayStateData(@PathParam("location") String state, @PathParam("date") String date) throws Exception {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-        long millis = fmt.parseMillis(date);
-        DateTime startingDateTime = new DateTime(millis);
-        if (minAndMax.containsKey(state) && startingDateTime.isAfter(minAndMax.get(state).getMinDate()) && startingDateTime.isBefore(minAndMax.get(state).getMaxDate())) {
-            ConnectionUtil c = new ConnectionUtil();
-            int stateCases = c.getCases(state, date);
-            int stateDeaths = c.getDeaths(state, date);
-            c.close();
-            return new Saying(state, stateCases, stateDeaths);
-        } else {
-            throw new WebApplicationException("state or date is invalid.", 400);
+        ConnectionPool pool = new ConnectionPool("jdbc:mysql://localhost:3306/covid_data?characterEncoding=latin1", "root", "Ye11owstone", 10);
+        Connection conn = null;
+        try {
+            conn = pool.getConnection();
+            if (!ConnectionUtil.isAvailable(conn, state, date)) {
+                throw new WebApplicationException("state or date is invalid.", 400);
+            }
+        } catch (WebApplicationException e) {
+            throw e;
+        } finally {
+            if (conn != null) {
+                pool.returnConnection(conn);
+            }
         }
+
+        int stateCases = 0;
+        int stateDeaths = 0;
+
+        try {
+            conn = pool.getConnection();
+            stateCases = ConnectionUtil.getCases(conn, state, date);
+            stateDeaths = ConnectionUtil.getDeaths(conn, state, date);
+        } finally {
+            if (conn != null) {
+                pool.returnConnection(conn);
+            }
+        }
+
+        return new Saying(state, stateCases, stateDeaths);
     }
 
 }

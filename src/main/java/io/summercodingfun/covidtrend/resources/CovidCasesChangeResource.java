@@ -14,39 +14,46 @@ import org.jfree.data.xy.XYSeriesCollection;
 import javax.ws.rs.*;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
-import java.util.SortedMap;
+import java.sql.Connection;
 
 @Path("/covid-cases-change/{location}")
 @Produces("image/png")
 
 public class CovidCasesChangeResource {
-    private final SortedMap<String, MinAndMaxDateByState> minAndMaxDate;
 
-    public CovidCasesChangeResource(SortedMap<String, MinAndMaxDateByState> md) {
-        this.minAndMaxDate = md;
+    public CovidCasesChangeResource() {
     }
 
     @GET
     @Timed
     public StreamingOutput displayTrend(@PathParam("location") String state) throws Exception {
         var series = new XYSeries("Change in Cases");
-        DateTime minDate = minAndMaxDate.get(state).getMinDate();
-        DateTime maxDate = minAndMaxDate.get(state).getMaxDate();
-        DateTime date = new DateTime(minDate);
-        DateTime date2 = new DateTime(date.plusDays(1));
+
+        DateTime minDate = new DateTime();
+        DateTime maxDate = new DateTime();
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
         DateTimeFormatter fmt2 = DateTimeFormat.forPattern("MM-dd-yyyy");
+        ConnectionPool pool = new ConnectionPool("jdbc:mysql://localhost:3306/covid_data?characterEncoding=latin1", "root", "Ye11owstone", 10);
+        Connection conn = null;
 
-        ConnectionUtil c = new ConnectionUtil();
-
-        int i = 0;
-        while(date2.isBefore(maxDate)) {
-            series.add(Double.valueOf(i), Double.valueOf(c.getCases(state, fmt.print(date2)) - c.getCases(state, fmt.print(date))));
-            date = date.plusDays(1);
-            date2 = date2.plusDays(1);
-            i++;
+        try {
+            conn = pool.getConnection();
+            minDate = ConnectionUtil.getMinDate(conn, state);
+            maxDate = ConnectionUtil.getMaxDate(conn, state);
+            DateTime date = new DateTime(minDate);
+            DateTime date2 = new DateTime(date.plusDays(1));
+            int i = 0;
+            while(date2.isBefore(maxDate)) {
+                series.add(Double.valueOf(i), Double.valueOf(ConnectionUtil.getCases(conn, state, fmt.print(date2)) - ConnectionUtil.getCases(conn, state, fmt.print(date))));
+                date = date.plusDays(1);
+                date2 = date2.plusDays(1);
+                i++;
+            }
+        } finally {
+            if (conn != null) {
+                pool.returnConnection(conn);
+            }
         }
-        c.close();
 
         var dataset = new XYSeriesCollection();
         dataset.addSeries(series);
@@ -54,7 +61,7 @@ public class CovidCasesChangeResource {
         JFreeChart chart = Chart.createXYLineChart(
                 String.format("%s Change in Cases from %s to %s", state, fmt2.print(minDate), fmt2.print(maxDate)),
                 "Days",
-                "Number of Cases",
+                "Number of New Cases",
                 dataset
                 );
 
