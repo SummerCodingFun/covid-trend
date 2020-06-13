@@ -14,23 +14,21 @@ import java.sql.Connection;
 @Produces(MediaType.APPLICATION_JSON)
 
 public class CovidCaseResource {
+    private ConnectionPool pool;
 
-    public CovidCaseResource(){
+    public CovidCaseResource(ConnectionPool pool) {
+        this.pool = pool;
     }
 
     @GET
     @Timed
     public Saying displayStateData(@PathParam("location") String state, @PathParam("date") String date) throws Exception {
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-        ConnectionPool pool = new ConnectionPool("jdbc:mysql://localhost:3306/covid_data?characterEncoding=latin1", "root", "Ye11owstone", 10);
         Connection conn = null;
         try {
             conn = pool.getConnection();
             if (!ConnectionUtil.isAvailable(conn, state, date)) {
                 throw new WebApplicationException("state or date is invalid.", 400);
             }
-        } catch (WebApplicationException e) {
-            throw e;
         } finally {
             if (conn != null) {
                 pool.returnConnection(conn);

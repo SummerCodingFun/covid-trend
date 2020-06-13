@@ -20,8 +20,10 @@ import java.sql.Connection;
 @Produces("image/png")
 
 public class CovidCasesTrendResource {
+    private ConnectionPool pool;
 
-    public CovidCasesTrendResource() {
+    public CovidCasesTrendResource(ConnectionPool pool) {
+        this.pool = pool;
     }
 
     @GET
@@ -33,7 +35,6 @@ public class CovidCasesTrendResource {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
         DateTimeFormatter fmt2 = DateTimeFormat.forPattern("MM-dd-yyyy");
 
-        ConnectionPool pool = new ConnectionPool("jdbc:mysql://localhost:3306/covid_data?characterEncoding=latin1", "root", "Ye11owstone", 10);
         Connection conn = null;
 
         try {

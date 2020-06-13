@@ -14,15 +14,16 @@ import java.sql.Connection;
 @Produces(MediaType.APPLICATION_JSON)
 
 public class LatestCovidResource {
+    private ConnectionPool pool;
 
-    public LatestCovidResource(){
+    public LatestCovidResource(ConnectionPool pool){
+        this.pool = pool;
     }
 
     @GET
     @Timed
     public Saying displayStateData(@PathParam("location") String currentState) throws Exception {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-        ConnectionPool pool = new ConnectionPool("jdbc:mysql://localhost:3306/covid_data?characterEncoding=latin1", "root", "Ye11owstone", 10);
         Connection conn = null;
 
         DateTime currentDate = new DateTime();
@@ -38,8 +39,6 @@ public class LatestCovidResource {
             currentDate = ConnectionUtil.getMaxDate(conn, currentState);
             stateCases = ConnectionUtil.getCases(conn, currentState, fmt.print(currentDate));
             stateDeaths = ConnectionUtil.getDeaths(conn, currentState, fmt.print(currentDate));
-        } catch (WebApplicationException e) {
-            throw new WebApplicationException("Please enter a valid state", 400);
         } finally {
             if (conn != null) {
                 pool.returnConnection(conn);

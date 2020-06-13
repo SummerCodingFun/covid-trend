@@ -16,15 +16,16 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 
 public class CovidRangeDataResource {
+    private ConnectionPool pool;
 
-    public CovidRangeDataResource(){
+    public CovidRangeDataResource(ConnectionPool pool){
+        this.pool = pool;
     }
 
     @GET
     @Timed
     public CovidRangeData displayRangeData(@PathParam("location") String state, @PathParam("startingDate") String startingDate, @PathParam("range") String range) throws Exception {
         int r;
-        ConnectionPool pool = new ConnectionPool("jdbc:mysql://localhost:3306/covid_data?characterEncoding=latin1", "root", "Ye11owstone", 10);
         Connection conn = null;
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
         long millis = fmt.parseMillis(startingDate);
@@ -42,8 +43,6 @@ public class CovidRangeDataResource {
             }
         } catch (NumberFormatException e) {
             throw new WebApplicationException("range must be a number", 400);
-        } catch (WebApplicationException e) {
-            throw e;
         } finally {
             if (conn != null) {
                 pool.returnConnection(conn);
