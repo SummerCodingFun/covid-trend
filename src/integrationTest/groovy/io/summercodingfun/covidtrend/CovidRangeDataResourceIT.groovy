@@ -97,7 +97,7 @@ class CovidRangeDataResourceIT extends Specification{
         then: 'server returns 400 code'
         HttpResponseException e = thrown(HttpResponseException)
         assert e.response.status == 400 : 'state is invalid'
-        assert e.response.responseData['message'] == 'Please enter a valid state'
+        assert e.response.responseData['message'] == 'state, starting date, or range is invalid'
     }
 
     def 'should return 400 when date is invalid'(){
@@ -127,7 +127,7 @@ class CovidRangeDataResourceIT extends Specification{
         then: 'server returns 400 code'
         HttpResponseException e = thrown(HttpResponseException)
         assert e.response.status == 400 : 'range is too low'
-        assert e.response.responseData['message'] == 'state, starting date, or range is invalid'
+        assert e.response.responseData['message'] == 'state or range is invalid'
     }
 
     def 'should return 400 when range is too high'(){
@@ -142,7 +142,7 @@ class CovidRangeDataResourceIT extends Specification{
         then: 'server returns 400 code'
         HttpResponseException e = thrown(HttpResponseException)
         assert e.response.status == 400 : 'range is too high'
-        assert e.response.responseData['message'] == 'state, starting date, or range is invalid'
+        assert e.response.responseData['message'] == 'state or range is invalid'
     }
 
     def 'should return 400 when range is not a number'(){

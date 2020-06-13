@@ -8,62 +8,67 @@ import org.joda.time.format.DateTimeFormatter;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.SortedMap;
 import java.util.List;
 
 @Path("/covid-range-data/{location}/{startingDate}/{range}")
 @Produces(MediaType.APPLICATION_JSON)
 
 public class CovidRangeDataResource {
-    private final SortedMap<String, Integer> cases;
-    private final SortedMap<String, Integer> deaths;
-    private final SortedMap<String, MinAndMaxDateByState> minAndMax;
+    private ConnectionPool pool;
 
-    public CovidRangeDataResource(SortedMap<String, Integer> cases, SortedMap<String, Integer> deaths, SortedMap<String, MinAndMaxDateByState> minAndMax) {
-        this.cases = cases;
-        this.deaths = deaths;
-        this.minAndMax = minAndMax;
+    public CovidRangeDataResource(ConnectionPool pool){
+        this.pool = pool;
     }
 
     @GET
     @Timed
-    public CovidRangeData displayRangeData(@PathParam("location") String state, @PathParam("startingDate") String startingDate, @PathParam("range") String range){
+    public CovidRangeData displayRangeData(@PathParam("location") String state, @PathParam("startingDate") String startingDate, @PathParam("range") String range) throws Exception {
         int r;
-        try {
-            r = Integer.parseInt(range);
-        } catch (NumberFormatException e) {
-            throw new WebApplicationException("range must be a number", 400);
-        }
-
-        if (!minAndMax.containsKey(state)) {
-            throw new WebApplicationException("Please enter a valid state", 400);
-        }
-        String key = Util.createKey(state, startingDate);
+        Connection conn = null;
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
         long millis = fmt.parseMillis(startingDate);
         DateTime theRange = new DateTime(millis);
-        theRange = theRange.plusDays(r);
-        if (cases.containsKey(key) && deaths.containsKey(key) && theRange.isBefore(minAndMax.get(state).getMaxDate()) && theRange.isAfter(minAndMax.get(state).getMinDate())) {
-            List<CasesAndDeathsByDate> information = new ArrayList<>();
+        List<CasesAndDeathsByDate> information = new ArrayList<>();
+        try {
+            r = Integer.parseInt(range);
+            theRange = theRange.plusDays(r);
+            conn = pool.getConnection();
+            if (!ConnectionUtil.isAvailable(conn, state, startingDate)) {
+                throw new WebApplicationException("state, starting date, or range is invalid", 400);
+            }
+            if (!ConnectionUtil.isAvailable(conn, state, fmt.print(theRange))) {
+                throw new WebApplicationException("state or range is invalid", 400);
+            }
+        } catch (NumberFormatException e) {
+            throw new WebApplicationException("range must be a number", 400);
+        } finally {
+            if (conn != null) {
+                pool.returnConnection(conn);
+            }
+        }
 
-            CasesAndDeathsByDate yourData = new CasesAndDeathsByDate(startingDate, cases.get(key), deaths.get(key));
-            information.add(yourData);
-
-            int multiplier = r < 0 ? -1 : 1;
-
+        int multiplier = r < 0 ? -1 : 1;
+        try {
+            conn = pool.getConnection();
             DateTime startingDateTime = new DateTime(millis);
+            CasesAndDeathsByDate yourData = new CasesAndDeathsByDate(startingDateTime, ConnectionUtil.getCases(conn, state, fmt.print(startingDateTime)), ConnectionUtil.getDeaths(conn, state, fmt.print(startingDateTime)));
+            information.add(yourData);
 
             for (int i = 0; i < r * multiplier; i++) {
                 startingDateTime = startingDateTime.plusDays(1 * multiplier);
-                String key1 = Util.createKey(state, fmt.print(startingDateTime));
-                CasesAndDeathsByDate newData = new CasesAndDeathsByDate(fmt.print(startingDateTime), cases.get(key1), deaths.get(key1));
+                int stateCases = ConnectionUtil.getCases(conn, state, fmt.print(startingDateTime));
+                int stateDeaths = ConnectionUtil.getDeaths(conn, state, fmt.print(startingDateTime));
+                CasesAndDeathsByDate newData = new CasesAndDeathsByDate(startingDateTime, stateCases, stateDeaths);
                 information.add(newData);
             }
-            return new CovidRangeData(state, information);
-        } else {
-            throw new WebApplicationException("state, starting date, or range is invalid", 400);
+        } finally {
+            if (conn != null) {
+                pool.returnConnection(conn);
+            }
         }
-    }
 
+        return new CovidRangeData(state, information);
+    }
 }
