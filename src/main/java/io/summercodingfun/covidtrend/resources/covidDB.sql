@@ -14,7 +14,7 @@ CREATE TABLE usStates(
     PRIMARY KEY(theDate, state)
 );
 
-LOAD DATA LOCAL INFILE '/Users/claire/Desktop/covid-trend/us-states.csv'
+LOAD DATA LOCAL INFILE 'src/main/java/io/summercodingfun/covidtrend/resources/us-states.csv'
 INTO TABLE usStates
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'

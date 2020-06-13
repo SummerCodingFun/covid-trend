@@ -28,6 +28,7 @@ public class ConnectionUtil {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            throw e;
         }
         return stateCases;
     }
@@ -44,6 +45,7 @@ public class ConnectionUtil {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            throw e;
         }
         return stateDeaths;
     }
@@ -64,6 +66,7 @@ public class ConnectionUtil {
             minDate = new DateTime(millis);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            throw e;
         }
         return minDate;
     }
@@ -84,6 +87,7 @@ public class ConnectionUtil {
             maxDate = new DateTime(millis);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            throw e;
         }
         return maxDate;
     }
@@ -98,6 +102,7 @@ public class ConnectionUtil {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            throw e;
         }
 
         return true;
@@ -114,6 +119,7 @@ public class ConnectionUtil {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            throw e;
         }
 
         return true;
