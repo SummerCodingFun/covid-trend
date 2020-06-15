@@ -15,12 +15,14 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
 import java.sql.Connection;
+import java.util.logging.Logger;
 
 @Path("/covid-cases-trend/{location}")
 @Produces("image/png")
 
 public class CovidCasesTrendResource {
     private ConnectionPool pool;
+    private static final Logger logger = Logger.getLogger("io.summercodingfun.covidtrend.resources.CovidCasesTrendResource");
 
     public CovidCasesTrendResource(ConnectionPool pool) {
         this.pool = pool;
@@ -29,6 +31,8 @@ public class CovidCasesTrendResource {
     @GET
     @Timed
     public StreamingOutput displayTrend(@PathParam("location") String state) throws Exception {
+        logger.info(String.format("starting covid cases trend with %s", state));
+
         var series = new XYSeries("Cases");
         DateTime minDate = new DateTime();
         DateTime maxDate = new DateTime();

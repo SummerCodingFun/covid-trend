@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -11,9 +12,15 @@ import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ConnectionUtil {
-    private ConnectionUtil() {
+    private static Logger logger = Logger.getLogger("io.summercodingfun.covidtrend.resources.ConnectionUtil");
+
+    private ConnectionUtil() throws IOException {
+        logger.info("starting connection util");
     }
 
     public static int getCases(Connection conn, String currentState, String currentDate) throws SQLException, ParseException {
@@ -27,7 +34,7 @@ public class ConnectionUtil {
                 stateCases = resultSet.getInt("cases");
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.WARNING, e.getMessage());
             throw e;
         }
         return stateCases;
@@ -44,7 +51,7 @@ public class ConnectionUtil {
                 stateDeaths = resultSet.getInt("deaths");
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.WARNING, e.getMessage());
             throw e;
         }
         return stateDeaths;
@@ -65,7 +72,7 @@ public class ConnectionUtil {
             long millis = fmt2.parseMillis(fmt.format(md));
             minDate = new DateTime(millis);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.WARNING, e.getMessage());
             throw e;
         }
         return minDate;
@@ -86,7 +93,7 @@ public class ConnectionUtil {
             long millis = fmt2.parseMillis(fmt.format(md));
             maxDate = new DateTime(millis);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.WARNING, e.getMessage());
             throw e;
         }
         return maxDate;
@@ -101,7 +108,7 @@ public class ConnectionUtil {
                 return false;
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.WARNING, e.getMessage());
             throw e;
         }
 
@@ -118,7 +125,7 @@ public class ConnectionUtil {
                 return false;
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.WARNING, e.getMessage());
             throw e;
         }
 
