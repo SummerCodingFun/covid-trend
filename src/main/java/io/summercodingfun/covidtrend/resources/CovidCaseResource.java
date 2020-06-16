@@ -2,11 +2,12 @@ package io.summercodingfun.covidtrend.resources;
 
 import io.summercodingfun.covidtrend.api.Saying;
 import com.codahale.metrics.annotation.Timed;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.sql.Connection;
-import java.util.logging.Logger;
 
 
 @Path("/covid-cases/{location}/{date}")
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
 
 public class CovidCaseResource {
     private ConnectionPool pool;
-    private static final Logger logger = Logger.getLogger("io.summercodingfun.covidtrend.resources.CovidCaseResource");
+    private static final Logger logger = LoggerFactory.getLogger("CovidCaseResource");
 
     public CovidCaseResource(ConnectionPool pool) {
         this.pool = pool;
@@ -29,7 +30,7 @@ public class CovidCaseResource {
         try {
             conn = pool.getConnection();
             if (!ConnectionUtil.isAvailable(conn, state, date)) {
-                logger.severe("the state or date is invalid");
+                logger.error("the state or date is invalid");
                 throw new WebApplicationException("state or date is invalid.", 400);
             }
         } finally {

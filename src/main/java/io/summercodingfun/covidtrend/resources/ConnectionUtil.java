@@ -12,12 +12,11 @@ import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConnectionUtil {
-    private static Logger logger = Logger.getLogger("io.summercodingfun.covidtrend.resources.ConnectionUtil");
+    private static Logger logger = LoggerFactory.getLogger("ConnectionUtil");
 
     private ConnectionUtil() throws IOException {
         logger.info("starting connection util");
@@ -34,7 +33,7 @@ public class ConnectionUtil {
                 stateCases = resultSet.getInt("cases");
             }
         } catch (SQLException e) {
-            logger.log(Level.WARNING, e.getMessage());
+            logger.error(e.getMessage(), e);
             throw e;
         }
         return stateCases;
@@ -51,7 +50,7 @@ public class ConnectionUtil {
                 stateDeaths = resultSet.getInt("deaths");
             }
         } catch (SQLException e) {
-            logger.log(Level.WARNING, e.getMessage());
+            logger.error(e.getMessage(), e);
             throw e;
         }
         return stateDeaths;
@@ -72,10 +71,10 @@ public class ConnectionUtil {
             long millis = fmt2.parseMillis(fmt.format(md));
             minDate = new DateTime(millis);
         } catch (SQLException e) {
-            logger.log(Level.WARNING, e.getMessage());
+            logger.error(e.getMessage(), e);
             throw e;
         }
-        logger.info(String.format("the min date is: %s", fmt2.print(minDate)));
+        logger.info("the min date is: {}", minDate);
         return minDate;
     }
 
@@ -94,10 +93,10 @@ public class ConnectionUtil {
             long millis = fmt2.parseMillis(fmt.format(md));
             maxDate = new DateTime(millis);
         } catch (SQLException e) {
-            logger.log(Level.WARNING, e.getMessage());
+            logger.error(e.getMessage(), e);
             throw e;
         }
-        logger.info(String.format("the max date is: %s", fmt2.print(maxDate)));
+        logger.info("the max date is: {}", maxDate);
         return maxDate;
     }
 
@@ -110,7 +109,7 @@ public class ConnectionUtil {
                 return false;
             }
         } catch (SQLException e) {
-            logger.log(Level.WARNING, e.getMessage());
+            logger.error(e.getMessage(), e);
             throw e;
         }
 
@@ -127,7 +126,7 @@ public class ConnectionUtil {
                 return false;
             }
         } catch (SQLException e) {
-            logger.log(Level.WARNING, e.getMessage());
+            logger.error(e.getMessage(), e);
             throw e;
         }
 

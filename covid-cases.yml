@@ -1,2 +1,28 @@
 template: The state of %s 's data
 
+logging:
+  level: INFO
+  appenders:
+    - type: file
+      currentLogFilename: /opt/apps/logs/covidtrend.log
+      threshold: ALL
+      queueSize: 512
+      discardingThreshold: 0
+      archive: true
+      archivedLogFilenamePattern: /opt/apps/logs/covidtrend-%i.log
+      archivedFileCount: 5
+      timeZone: PST
+      logFormat: "%-5p [%d{ISO8601,PST}] %c: %m%n%rEx"
+      maxFileSize: 20MB
+      bufferSize: 8KiB
+
+    - type: console
+      threshold: ALL
+      queueSize: 512
+      discardingThreshold: 0
+      timeZone: PST
+      target: stdout
+      logFormat: "%-5p [%d{ISO8601,PST}] %c: %m%n%rEx"
+
+
+
