@@ -58,6 +58,7 @@ public class CovidCasesTrendResource {
             }
         }
 
+        logger.info(String.format("this series has %s data points", series.getItemCount()));
         var dataset = new XYSeriesCollection();
         dataset.addSeries(series);
 

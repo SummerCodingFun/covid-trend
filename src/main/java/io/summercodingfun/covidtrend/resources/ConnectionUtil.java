@@ -75,6 +75,7 @@ public class ConnectionUtil {
             logger.log(Level.WARNING, e.getMessage());
             throw e;
         }
+        logger.info(String.format("the min date is: %s", fmt2.print(minDate)));
         return minDate;
     }
 
@@ -96,6 +97,7 @@ public class ConnectionUtil {
             logger.log(Level.WARNING, e.getMessage());
             throw e;
         }
+        logger.info(String.format("the max date is: %s", fmt2.print(maxDate)));
         return maxDate;
     }
 
