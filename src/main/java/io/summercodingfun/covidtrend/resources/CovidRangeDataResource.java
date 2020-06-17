@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 
 public class CovidRangeDataResource {
     private ConnectionPool pool;
-    private static final Logger logger = LoggerFactory.getLogger("CovidRangeDataResource");
+    private static final Logger logger = LoggerFactory.getLogger(CovidRangeDataResource.class);
 
     public CovidRangeDataResource(ConnectionPool pool){
         this.pool = pool;

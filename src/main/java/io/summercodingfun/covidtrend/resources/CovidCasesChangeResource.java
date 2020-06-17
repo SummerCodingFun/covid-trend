@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 
 public class CovidCasesChangeResource {
     private ConnectionPool pool;
-    private static final Logger logger = LoggerFactory.getLogger("CovidCasesChangeResource");
+    private static final Logger logger = LoggerFactory.getLogger(CovidCasesChangeResource.class);
 
     public CovidCasesChangeResource(ConnectionPool pool) {
         this.pool = pool;

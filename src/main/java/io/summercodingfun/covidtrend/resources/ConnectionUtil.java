@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConnectionUtil {
-    private static Logger logger = LoggerFactory.getLogger("ConnectionUtil");
+    private static Logger logger = LoggerFactory.getLogger(ConnectionUtil.class);
 
     private ConnectionUtil() throws IOException {
         logger.info("starting connection util");

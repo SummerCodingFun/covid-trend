@@ -15,7 +15,7 @@ import java.sql.Connection;
 
 public class CovidCaseResource {
     private ConnectionPool pool;
-    private static final Logger logger = LoggerFactory.getLogger("CovidCaseResource");
+    private static final Logger logger = LoggerFactory.getLogger(CovidCaseResource.class);
 
     public CovidCaseResource(ConnectionPool pool) {
         this.pool = pool;
