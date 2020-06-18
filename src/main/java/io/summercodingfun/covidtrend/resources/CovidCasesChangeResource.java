@@ -15,12 +15,15 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
 import java.sql.Connection;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 @Path("/covid-cases-change/{location}")
 @Produces("image/png")
 
 public class CovidCasesChangeResource {
     private ConnectionPool pool;
+    private static final Logger logger = LoggerFactory.getLogger(CovidCasesChangeResource.class);
 
     public CovidCasesChangeResource(ConnectionPool pool) {
         this.pool = pool;
@@ -29,6 +32,7 @@ public class CovidCasesChangeResource {
     @GET
     @Timed
     public StreamingOutput displayTrend(@PathParam("location") String state) throws Exception {
+        logger.info("starting covid cases change with {}", state);
         var series = new XYSeries("Change in Cases");
 
         DateTime minDate = new DateTime();
@@ -56,6 +60,7 @@ public class CovidCasesChangeResource {
             }
         }
 
+        logger.info("this series has {} data points", series.getItemCount());
         var dataset = new XYSeriesCollection();
         dataset.addSeries(series);
 
