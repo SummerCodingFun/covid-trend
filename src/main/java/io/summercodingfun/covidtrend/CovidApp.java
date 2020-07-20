@@ -30,6 +30,7 @@ public class CovidApp extends Application<CovidConfig> {
         final LatestCovidResource latestResource = new LatestCovidResource(pool);
         final CovidCasesTrendResource casesTrendResource = new CovidCasesTrendResource(pool);
         final CovidCasesChangeResource changeResource = new CovidCasesChangeResource(pool);
+        final CovidComparisonChartResource covidComparisonChartResourcechartResource = new CovidComparisonChartResource(pool);
         final TemplateHealthCheck healthCheck = new TemplateHealthCheck(config.getTemplate());
 
         env.healthChecks().register("template", healthCheck);
@@ -38,5 +39,6 @@ public class CovidApp extends Application<CovidConfig> {
         env.jersey().register(latestResource);
         env.jersey().register(casesTrendResource);
         env.jersey().register(changeResource);
+        env.jersey().register(covidComparisonChartResourcechartResource);
     }
 }

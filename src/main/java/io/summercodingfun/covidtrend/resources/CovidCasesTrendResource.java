@@ -1,6 +1,8 @@
 package io.summercodingfun.covidtrend.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import io.summercodingfun.covidtrend.api.URLList;
+import io.summercodingfun.covidtrend.api.URLMessage;
 import io.summercodingfun.covidtrend.chart.Chart;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -12,14 +14,18 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
+import java.net.URL;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-@Path("/covid-cases-trend/{location}")
-@Produces("image/png")
+@Path("/covid-app")
 
 public class CovidCasesTrendResource {
     private ConnectionPool pool;
@@ -31,7 +37,12 @@ public class CovidCasesTrendResource {
 
     @GET
     @Timed
+    @Path("/cases-trend/{location}")
+    @Produces("image/png")
     public StreamingOutput displayTrend(@PathParam("location") String state) throws Exception {
+        if (state == null) {
+            throw new WebApplicationException("Please enter a state", 400);
+        }
         logger.info("starting covid cases trend with {}", state);
 
         var series = new XYSeries("Cases");
@@ -78,7 +89,20 @@ public class CovidCasesTrendResource {
                 output.write(outputStream.toByteArray());
             }
         };
+
         return streamingOutput;
     }
 
+
+    @GET
+    @Timed
+    @Path("/url-trend")
+    @Produces(MediaType.APPLICATION_JSON)
+    public URLMessage getURL(@QueryParam("location") String state) throws Exception {
+        URL url = new URL(String.format("http://localhost:8080/covid-app/cases-trend/%s", state));
+        URLList u = new URLList(url);
+        List<URLList> list = new ArrayList<>();
+        list.add(u);
+        return new URLMessage(list);
+    }
 }

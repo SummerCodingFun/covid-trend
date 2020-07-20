@@ -14,7 +14,7 @@ import java.util.List;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-@Path("/covid-range-data/{location}/{startingDate}/{range}")
+@Path("/covid-app")
 @Produces(MediaType.APPLICATION_JSON)
 
 public class CovidRangeDataResource {
@@ -27,7 +27,8 @@ public class CovidRangeDataResource {
 
     @GET
     @Timed
-    public CovidRangeData displayRangeData(@PathParam("location") String state, @PathParam("startingDate") String startingDate, @PathParam("range") String range) throws Exception {
+    @Path("/range-data")
+    public CovidRangeData displayRangeData(@QueryParam("location") String state, @QueryParam("startingDate") String startingDate, @QueryParam("range") String range) throws Exception {
         logger.info("starting covid range data with {}", state);
         int r;
         Connection conn = null;
@@ -35,6 +36,7 @@ public class CovidRangeDataResource {
         long millis = fmt.parseMillis(startingDate);
         DateTime theRange = new DateTime(millis);
         List<CasesAndDeathsByDate> information = new ArrayList<>();
+
         try {
             r = Integer.parseInt(range);
             theRange = theRange.plusDays(r);
