@@ -23,7 +23,13 @@ public class CovidApp extends Application<CovidConfig> {
 
     @Override
     public void run(CovidConfig config, Environment env) throws Exception {
-        ConnectionPool pool = new ConnectionPool("jdbc:mysql://localhost:3306/covid_data?characterEncoding=latin1", "root", "Ye11owstone", 10);
+        String url = config.getDatabase().getUrl();
+        ConnectionPool pool = new ConnectionPool(
+                url + "?characterEncoding=latin1",
+                config.getDatabase().getUser(),
+                config.getDatabase().getPassword(),
+                10
+        );
 
         final CovidCaseResource caseResource = new CovidCaseResource(pool);
         final CovidRangeDataResource rangeResource = new CovidRangeDataResource(pool);
