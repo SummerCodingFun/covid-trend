@@ -8,6 +8,18 @@ public class CovidConfig extends Configuration {
     @NotEmpty
     private String template;
 
+    private DbConfig database;
+
+    @JsonProperty
+    public DbConfig getDatabase() {
+        return database;
+    }
+
+    @JsonProperty
+    public void setDatabase(DbConfig database) {
+        this.database = database;
+    }
+
     @JsonProperty
     public String getTemplate(){
         return template;
@@ -17,5 +29,4 @@ public class CovidConfig extends Configuration {
     public void setTemplate(String template, String infoCases, String infoDeaths, String trend){
         this.template = template;
     }
-
 }
