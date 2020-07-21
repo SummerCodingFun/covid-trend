@@ -82,7 +82,7 @@ public class CovidCasesTrendResource {
                 );
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ChartUtils.writeChartAsPNG(outputStream, chart, 700, 467);
+        ChartUtils.writeChartAsPNG(outputStream, chart, 1400, 934);
         StreamingOutput streamingOutput = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {

@@ -19,4 +19,4 @@ INTO TABLE usStates
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
-(theDate, state, fips, cases, deaths)
+(theDate, state, fips, cases, deaths);

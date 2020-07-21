@@ -25,10 +25,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Path("/covid-app")
-@Produces("image/png")
 
 public class CovidComparisonChartResource {
     private ConnectionPool pool;
@@ -40,37 +40,27 @@ public class CovidComparisonChartResource {
 
     @GET
     @Timed
-    @Path("/covid-comparison/{state1}/{state2}/{state3}/{state4}/{state5}")
-    public StreamingOutput displayTrend(@PathParam("state1") String state1,
-                                        @PathParam("state2") String state2,
-                                        @PathParam("state3") String state3,
-                                        @PathParam("state4") String state4,
-                                        @PathParam("state5") String state5) throws Exception {
+    @Produces("image/png")
+    @Path("/covid-comparison")
+    public StreamingOutput displayTrend(@QueryParam("state") List<String> states) throws Exception {
 
-        logger.info("starting covid comparison chart with {}, {}, {}, {}, {}", state1, state2, state3, state4, state5);
+        String s = String.format("starting covid comparison chart with %s", states.get(0));
+        for (int i = 1; i < states.size(); i++) {
+            s += String.format(", %s", states.get(i));
+        }
+        logger.info(s);
 
         DateTimeFormatter fmt2 = DateTimeFormat.forPattern("MM-dd-yyyy");
-        DateTime minDate = getMinDate(state1, state2, state3, state4, state5);
-        DateTime maxDate = getMaxDate(state1, state2, state3, state4, state5);
+        DateTime minDate = getMinDate(states);
+        DateTime maxDate = getMaxDate(states);
 
-        var series1 = getSeries(state1, minDate);
-        var series2 = getSeries(state2, minDate);
-        var series3 = getSeries(state3, minDate);
-        var series4 = getSeries(state4, minDate);
-        var series5 = getSeries(state5, minDate);
-
-
-        logger.info("{} has {} data points", state1, series1.getItemCount());
-        logger.info("{} has {} data points", state2, series2.getItemCount());
-        logger.info("{} has {} data points", state3, series3.getItemCount());
-        logger.info("{} has {} data points", state4, series4.getItemCount());
-        logger.info("{} has {} data points", state5, series5.getItemCount());
         var dataset = new XYSeriesCollection();
-        dataset.addSeries(series1);
-        dataset.addSeries(series2);
-        dataset.addSeries(series3);
-        dataset.addSeries(series4);
-        dataset.addSeries(series5);
+
+        for (int i = 0; i < states.size(); i++) {
+            var series = getSeries(states.get(i), minDate);
+            logger.info("{} has {} data points", states.get(i), series.getItemCount());
+            dataset.addSeries(series);
+        }
 
         JFreeChart chart = Chart.createXYLineChart(
                 String.format("Change in Cases from %s to %s", fmt2.print(minDate), fmt2.print(maxDate)),
@@ -80,7 +70,7 @@ public class CovidComparisonChartResource {
         );
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ChartUtils.writeChartAsPNG(outputStream, chart, 700, 467);
+        ChartUtils.writeChartAsPNG(outputStream, chart, 1400, 934);
         StreamingOutput streamingOutput = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
@@ -94,13 +84,15 @@ public class CovidComparisonChartResource {
     @Timed
     @Path("/url-comparison")
     @Produces(MediaType.APPLICATION_JSON)
-    public URLMessage getComparisonURL(@QueryParam("state1") String state1,
-                                       @QueryParam("state2") String state2,
-                                       @QueryParam("state3") String state3,
-                                       @QueryParam("state4") String state4,
-                                       @QueryParam("state5") String state5) throws Exception {
+    public URLMessage getComparisonURL(@QueryParam("state") String states) throws Exception {
 
-        URL url = new URL(String.format("http://localhost:8080/covid-app/covid-comparison/%s/%s/%s/%s/%s", state1, state2, state3, state4, state5));
+        String[] s = states.split(", ");
+        String l = String.format("http://localhost:8080/covid-app/covid-comparison?state=%s", s[0]);
+        for (int i = 1; i < s.length; i++) {
+            l += String.format("&state=%s", s[i]);
+        }
+
+        URL url = new URL(l);
         URLList u = new URLList(url);
         List<URLList> list = new ArrayList<>();
         list.add(u);
@@ -115,11 +107,18 @@ public class CovidComparisonChartResource {
 
         try {
             conn = pool.getConnection();
-//            DateTime minDate = ConnectionUtil.getMinDate(conn, state);
+            DateTime currentMinDate = ConnectionUtil.getMinDate(conn, state);
             DateTime maxDate = ConnectionUtil.getMaxDate(conn, state);
-            DateTime date11 = new DateTime(minDate);
+            DateTime date11 = new DateTime(currentMinDate);
             DateTime date12 = new DateTime(date11.plusDays(1));
             int i = 0;
+            if (currentMinDate.isAfter(minDate)) {
+                Date d1 = currentMinDate.toDate();
+                Date d2 = minDate.toDate();
+                long j = d1.getTime() - d2.getTime();
+                i = (int) (j/(24*60*60*1000));
+            }
+
             while(date12.isBefore(maxDate)) {
                 series.add(Double.valueOf(i), Double.valueOf(ConnectionUtil.getCases(conn, state, fmt.print(date12)) - ConnectionUtil.getCases(conn, state, fmt.print(date11))));
                 date11 = date11.plusDays(1);
@@ -147,16 +146,16 @@ public class CovidComparisonChartResource {
             if (minDate.isAfter(minDate1)) {
                 minDate = minDate1;
             }
-            if (minDate.isBefore(minDate2)) {
+            if (minDate.isAfter(minDate2)) {
                 minDate = minDate2;
             }
-            if (minDate.isBefore(minDate3)) {
+            if (minDate.isAfter(minDate3)) {
                 minDate = minDate3;
             }
-            if (minDate.isBefore(minDate4)) {
+            if (minDate.isAfter(minDate4)) {
                 minDate = minDate4;
             }
-            if (minDate.isBefore(minDate5)) {
+            if (minDate.isAfter(minDate5)) {
                 minDate = minDate5;
             }
         } finally {
@@ -165,6 +164,25 @@ public class CovidComparisonChartResource {
             }
         }
         return minDate  ;
+    }
+
+    public DateTime getMinDate(List<String> states) throws SQLException {
+        DateTime minDate = new DateTime();
+        Connection conn = null;
+        try {
+            conn = pool.getConnection();
+            for (int i = 0; i < states.size(); i++) {
+                DateTime tempMinDate = ConnectionUtil.getMinDate(conn, states.get(i));
+                if (minDate.isAfter(tempMinDate)) {
+                    minDate = tempMinDate;
+                }
+            }
+        } finally {
+            if (conn != null) {
+                pool.returnConnection(conn);
+            }
+        }
+        return minDate;
     }
 
     private DateTime getMaxDate(String state1, String state2, String state3, String state4, String state5) throws SQLException {
@@ -191,6 +209,25 @@ public class CovidComparisonChartResource {
             }
             if (maxDate.isBefore(maxDate5)) {
                 maxDate = maxDate5;
+            }
+        } finally {
+            if (conn != null) {
+                pool.returnConnection(conn);
+            }
+        }
+        return maxDate;
+    }
+
+    private DateTime getMaxDate(List<String> states) throws SQLException {
+        DateTime maxDate = new DateTime(Long.MIN_VALUE);
+        Connection conn = null;
+        try {
+            conn = pool.getConnection();
+            for (int i = 0; i < states.size(); i++) {
+                DateTime tempMaxDate = ConnectionUtil.getMaxDate(conn, states.get(i));
+                if (maxDate.isBefore(tempMaxDate)) {
+                    maxDate = tempMaxDate;
+                }
             }
         } finally {
             if (conn != null) {
