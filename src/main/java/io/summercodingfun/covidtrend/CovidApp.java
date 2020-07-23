@@ -5,17 +5,13 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.summercodingfun.covidtrend.resources.*;
 import io.summercodingfun.covidtrend.health.TemplateHealthCheck;
-import org.apache.ibatis.jdbc.ScriptRunner;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.knowm.dropwizard.sundial.SundialBundle;
+import org.knowm.dropwizard.sundial.SundialConfiguration;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.sql.Connection;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import java.util.EnumSet;
 
 public class CovidApp extends Application<CovidConfig> {
 
@@ -30,44 +26,18 @@ public class CovidApp extends Application<CovidConfig> {
 
     @Override
     public void initialize(Bootstrap<CovidConfig> bootstrap) {
+        bootstrap.addBundle(new SundialBundle<CovidConfig>() {
+            @Override
+            public SundialConfiguration getSundialConfiguration(CovidConfig config) {
+                return config.getSundialConfiguration();
+            }
+        });
     }
 
     @Override
     public void run(CovidConfig config, Environment env) throws Exception {
         ConnectionPool pool = new ConnectionPool("jdbc:mysql://localhost:3306/covid_data?characterEncoding=latin1", "root", "Ye11owstone", 10);
-
-        DateTime date = new DateTime();
-        date = date.minusDays(1);
-        boolean upToDate = true;
-        Connection conn = null;
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-
-        try {
-            conn = pool.getConnection();
-            if ((ConnectionUtil.getMaxDate(conn, "Alabama")).isBefore(date)) {
-                upToDate = false;
-            }
-        } finally {
-            if (conn != null) {
-                pool.returnConnection(conn);
-            }
-        }
-
-        if (!upToDate) {
-            InputStream inputStream = new URL("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv").openStream();
-            Files.copy(inputStream, Paths.get("src/main/java/io/summercodingfun/covidtrend/resources/us-states.csv"), StandardCopyOption.REPLACE_EXISTING);
-
-            try {
-                conn = pool.getConnection();
-                ScriptRunner sr = new ScriptRunner(conn);
-                Reader reader = new BufferedReader(new FileReader("src/main/java/io/summercodingfun/covidtrend/resources/covidDB.sql"));
-                sr.runScript(reader);
-            } finally {
-                if (conn != null) {
-                    pool.returnConnection(conn);
-                }
-            }
-        }
+        enableCorsHeaders(env);
 
         final CovidCaseResource caseResource = new CovidCaseResource(pool);
         final CovidRangeDataResource rangeResource = new CovidRangeDataResource(pool);
@@ -85,4 +55,13 @@ public class CovidApp extends Application<CovidConfig> {
         env.jersey().register(changeResource);
         env.jersey().register(covidComparisonChartResourcechartResource);
     }
+
+    private void enableCorsHeaders(Environment env) {
+        final FilterRegistration.Dynamic cors = env.servlets().addFilter("CORS", CrossOriginFilter.class);
+
+        cors.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
+        cors.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "X-Requested-With,Content-Type,Accept,Origin");
+        cors.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,POST,DELETE");
+
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");    }
 }
