@@ -63,5 +63,6 @@ public class CovidApp extends Application<CovidConfig> {
         cors.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "X-Requested-With,Content-Type,Accept,Origin");
         cors.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,POST,DELETE");
 
-        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");    }
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+    }
 }

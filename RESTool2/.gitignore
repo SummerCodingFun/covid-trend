@@ -1,7 +1,0 @@
-.vscode
-.idea
-node_modules/
-public/config.json
-public/config.js
-build/config.json
-build/config.js

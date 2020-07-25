@@ -40,7 +40,7 @@ public class CovidCaseResource {
         try {
             conn = pool.getConnection();
             if (!state.isEmpty() && !date.isEmpty()) {
-                logger.info(String.format("starting covid case with %s", state));
+                logger.info("starting covid case with {}", state);
                 if (ConnectionUtil.isAvailable(conn, state, date)) {
                     stateCases = ConnectionUtil.getCases(conn, state, date);
                     stateDeaths = ConnectionUtil.getDeaths(conn, state, date);
