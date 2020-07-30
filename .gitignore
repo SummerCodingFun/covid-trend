@@ -7,5 +7,11 @@
 classes/
 *.war
 *.ear
-build
-RESTool2/node_modules/
+distributions/
+generated/
+libs/
+reports/
+scripts/
+test-results/
+tmp/
+node_modules/
