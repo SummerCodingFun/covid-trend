@@ -28,6 +28,6 @@ if you have this error: `Client does not support authentication protocol request
 ### To run RESTool:
 - run the project from the root folder
 - enter the RESTool2 folder in the terminal
-- run `npm run build`
+- run `npm install`
 - once that has completed, it will say that it is ready to be deployed. In order to deploy the site, you will need to download a static server by running `npm install -g serve`
 - to run the server, type `serve -s build`

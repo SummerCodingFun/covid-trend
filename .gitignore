@@ -8,3 +8,4 @@ classes/
 *.war
 *.ear
 build
+RESTool2/node_modules/
