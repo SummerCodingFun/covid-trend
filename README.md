@@ -22,3 +22,12 @@ if you have this error: `Client does not support authentication protocol request
 - enter into mysql by typing: `mysql -uroot -p<password>`
 - enter and run `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '<password>'`
 - enter and run `flush privileges`
+
+
+
+### To run RESTool:
+- run the project from the root folder
+- enter the RESTool2 folder in the terminal
+- run `npm run build`
+- once that has completed, it will say that it is ready to be deployed. In order to deploy the site, you will need to download a static server by running `npm install -g serve`
+- to run the server, type `serve -s build`
