@@ -5,11 +5,11 @@ database:
   # the name of the JDBC driver, mysql in our case
   # driverClass: com.mysql.jdbc.Driver
   # the username
-  user: root
+  user: admin
   # the password
-  password: Ye11owstone
+  password: yosem1te
   # the JDBC URL; the database is called DWGettingStarted
-  url: jdbc:mysql://localhost:3306/covid_data
+  url: jdbc:mysql://covid-trend.cjl9xdgdbzk0.us-west-2.rds.amazonaws.com:3306/covid_data
 
 logging:
   level: INFO
@@ -35,10 +35,5 @@ logging:
       target: stdout
       logFormat: "%-5p [%d{ISO8601,PST}] %c: %m%n%rEx"
 
-sundial:
-  thread-pool-size: 5
-  shutdown-on-unload: true
-  start-delay-seconds: 0
-  start-scheduler-on-load: true
-  global-lock-on-load: false
-  annotated-jobs-package-name: io.summercodingfun.covidtrend.jobs
+
+

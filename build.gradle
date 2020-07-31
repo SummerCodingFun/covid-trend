@@ -28,6 +28,13 @@ dependencies {
   testCompile "org.codehaus.groovy:groovy-all:2.4.11"
 }
 
+jar {
+  manifest {
+    attributes('Main-Class': 'io.summercodingfun.covidtrend.CovidApp')
+    attributes("Class-Path": configurations.compile.collect { it.getName() }.join(' '))
+  }
+}
+
 sourceSets {
   integrationTest {
     compileClasspath += sourceSets.main.output + configurations.testCompile

@@ -15,6 +15,18 @@ public class CovidConfig extends Configuration {
     @NotNull
     private SundialConfiguration sundialConfiguration = new SundialConfiguration();
 
+    private DbConfig database;
+
+    @JsonProperty
+    public DbConfig getDatabase() {
+        return database;
+    }
+
+    @JsonProperty
+    public void setDatabase(DbConfig database) {
+        this.database = database;
+    }
+
     @JsonProperty
     public String getTemplate(){
         return template;

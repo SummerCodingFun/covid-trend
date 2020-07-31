@@ -5,7 +5,6 @@ import org.apache.ibatis.jdbc.ScriptRunner;
 import org.knowm.sundial.Job;
 import org.knowm.sundial.JobContext;
 import org.knowm.sundial.annotations.CronTrigger;
-import org.knowm.sundial.annotations.SimpleTrigger;
 import org.knowm.sundial.exceptions.JobInterruptException;
 import org.quartz.core.JobExecutionContext;
 import org.slf4j.Logger;
@@ -18,11 +17,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
 
-//@CronTrigger(cron = "0 0 0 * * ?")
-@SimpleTrigger(repeatInterval = 30, timeUnit = TimeUnit.SECONDS)
-
+@CronTrigger(cron = "0 0 0 * * ?")
 public class DataJob extends Job {
     private final Logger logger = LoggerFactory.getLogger(DataJob.class);
 
