@@ -1,15 +1,15 @@
-package io.summercodingfun.covidtrend.jobs;
+package io.summercodingfun.covidtrend.resources;
 
-import io.summercodingfun.covidtrend.resources.ConnectionPool;
+import com.codahale.metrics.annotation.Timed;
 import org.apache.ibatis.jdbc.ScriptRunner;
-import org.knowm.sundial.Job;
-import org.knowm.sundial.JobContext;
-import org.knowm.sundial.exceptions.JobInterruptException;
-import org.quartz.core.JobExecutionContext;
-import org.quartz.jobs.JobDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
@@ -18,20 +18,20 @@ import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class DataJob extends Job {
-    private final Logger logger = LoggerFactory.getLogger(DataJob.class);
-    private JobDetail jobDetail;
+@Path("/covid-app/get-data")
+@Produces(MediaType.APPLICATION_JSON)
+public class JobResource {
+    private static final Logger logger = LoggerFactory.getLogger(JobResource.class);
+    private ConnectionPool pool;
 
-    protected void initContextContainer(JobExecutionContext jobExecutionContext) {
-        JobContext jobContext = new JobContext();
-        jobContext.addQuartzContext(jobExecutionContext);
-        jobDetail = jobExecutionContext.getJobDetail();
+    public JobResource(ConnectionPool pool) {
+        this.pool = pool;
     }
 
-    @Override
-    public void doRun() throws JobInterruptException {
+    @GET
+    @Timed
+    public Response getData() {
         logger.info("Retrieving New Data...");
-        ConnectionPool pool = (ConnectionPool)jobDetail.getJobDataMap().get("pool");
         InputStream inputStream = null;
         try {
             inputStream = new URL("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv").openStream();
@@ -40,7 +40,6 @@ public class DataJob extends Job {
             logger.error("IO Exception when copying data", e);
         }
         Connection conn = null;
-        logger.info("data retrieved");
 
         try {
             conn = pool.getConnection();
@@ -62,7 +61,6 @@ public class DataJob extends Job {
                 }
             }
         }
-        logger.info("loaded data successfully");
+        return Response.ok().build();
     }
-
 }

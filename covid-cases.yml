@@ -35,10 +35,3 @@ logging:
       target: stdout
       logFormat: "%-5p [%d{ISO8601,PST}] %c: %m%n%rEx"
 
-sundial:
-  thread-pool-size: 5
-  shutdown-on-unload: true
-  start-delay-seconds: 0
-  start-scheduler-on-load: true
-  global-lock-on-load: false
-  annotated-jobs-package-name: io.summercodingfun.covidtrend.jobs

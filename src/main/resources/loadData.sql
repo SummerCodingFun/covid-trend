@@ -1,9 +1,7 @@
-DROP DATABASE IF EXISTS
-    covid_data;
-
-CREATE DATABASE covid_data;
-
 use covid_data;
+
+DROP TABLE IF EXISTS
+    usStates;
 
 CREATE TABLE usStates(
     theDate Date,
