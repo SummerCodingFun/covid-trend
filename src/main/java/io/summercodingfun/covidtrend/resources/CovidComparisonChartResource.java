@@ -1,6 +1,7 @@
 package io.summercodingfun.covidtrend.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.Lists;
 import io.summercodingfun.covidtrend.api.URLList;
 import io.summercodingfun.covidtrend.api.URLMessage;
 import io.summercodingfun.covidtrend.chart.Chart;
@@ -86,10 +87,11 @@ public class CovidComparisonChartResource {
     @Produces(MediaType.APPLICATION_JSON)
     public URLMessage getComparisonURL(@QueryParam("state") String states) throws Exception {
 
-        String[] s = states.split(", ");
-        String l = String.format("http://localhost:8080/covid-app/covid-comparison?state=%s", s[0]);
+        String[] s = states.split(",");
+        String l = String.format("http://localhost:8080/covid-app/covid-comparison?state=%s", s[0].trim());
+
         for (int i = 1; i < s.length; i++) {
-            l += String.format("&state=%s", s[i]);
+            l += String.format("&state=%s", s[i].trim());
         }
 
         URL url = new URL(l);
