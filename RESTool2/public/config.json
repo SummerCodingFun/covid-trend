@@ -71,7 +71,7 @@
             {
               "name": "date",
               "value": "",
-              "placeholder": "Enter the date",
+              "placeholder": "yyyy-mm-dd",
               "label": "Date",
               "type": "date"
             }
@@ -119,7 +119,7 @@
             {
               "name": "startingDate",
               "value": "",
-              "placeholder": "Enter the starting date",
+              "placeholder": "yyyy-mm-dd",
               "label": "Starting Date",
               "type": "date"
             },
