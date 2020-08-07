@@ -10,3 +10,4 @@ classes/
 build/
 RESTool2/build/
 RESTool2/node_modules/
+package-lock.json
