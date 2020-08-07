@@ -7,4 +7,7 @@
 classes/
 *.war
 *.ear
-build
+build/
+RESTool2/build/
+RESTool2/node_modules/
+package-lock.json

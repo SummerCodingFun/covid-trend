@@ -1,6 +1,8 @@
 package io.summercodingfun.covidtrend.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import io.summercodingfun.covidtrend.api.URLList;
+import io.summercodingfun.covidtrend.api.URLMessage;
 import io.summercodingfun.covidtrend.chart.Chart;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -12,15 +14,19 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
+import java.net.URL;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-@Path("/covid-cases-change/{location}")
+@Path("/covid-app")
 @Produces("image/png")
-
 public class CovidCasesChangeResource {
     private ConnectionPool pool;
     private static final Logger logger = LoggerFactory.getLogger(CovidCasesChangeResource.class);
@@ -31,6 +37,7 @@ public class CovidCasesChangeResource {
 
     @GET
     @Timed
+    @Path("/cases-change/{location}")
     public StreamingOutput displayTrend(@PathParam("location") String state) throws Exception {
         logger.info("starting covid cases change with {}", state);
         var series = new XYSeries("Change in Cases");
@@ -72,7 +79,7 @@ public class CovidCasesChangeResource {
                 );
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ChartUtils.writeChartAsPNG(outputStream, chart, 700, 467);
+        ChartUtils.writeChartAsPNG(outputStream, chart, 1400, 934);
         StreamingOutput streamingOutput = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
@@ -80,5 +87,17 @@ public class CovidCasesChangeResource {
             }
         };
         return streamingOutput;
+    }
+
+    @GET
+    @Timed
+    @Path("url-change")
+    @Produces(MediaType.APPLICATION_JSON)
+    public URLMessage getURLChange(@QueryParam("location") String state) throws Exception {
+        URL url = new URL(String.format("http://localhost:8080/covid-app/cases-change/%s", state));
+        URLList u = new URLList(url);
+        List<URLList> list = new ArrayList<>();
+        list.add(u);
+        return new URLMessage(list);
     }
 }

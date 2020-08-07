@@ -2,6 +2,9 @@ package io.summercodingfun.covidtrend.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Saying {
     private String state;
     private int numberOfCases;
@@ -15,7 +18,6 @@ public class Saying {
         this.numberOfCases = cases;
         this.numberOfDeaths = deaths;
     }
-
 
     @JsonProperty
     public String getState(){

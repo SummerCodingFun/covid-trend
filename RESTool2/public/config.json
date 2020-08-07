@@ -1,0 +1,248 @@
+{
+  "name": "Covid App",
+  "favicon": "https://www.commoninja.com/public/favicon.ico",
+  "baseUrl": "http://localhost:8080/covid-app",
+  "customStyles": {
+    "vars": {
+      "navBackground": "#09AACA",
+      "navItemActiveBackground": "#2196AE",
+      "navItemHoverBackground": "#2196AE"
+    }
+  },
+  "pages": [
+    {
+      "name": "Latest Covid Cases by State",
+      "id": "latestCases",
+      "description": "Displays the current cases by state",
+      "methods": {
+        "getAll": {
+          "label": "Get All",
+          "dataPath": "list",
+          "url": "/all-latest-cases",
+          "queryParams": [
+            {
+              "name": "state",
+              "value": "",
+              "placeholder": "Enter state",
+              "label": "State",
+              "type": "text"
+            }
+          ],
+          "display": {
+            "type": "table"
+          },
+          "fields": [
+            {
+              "name": "state",
+              "type": "text",
+              "label": "State and Date"
+            },
+            {
+              "name": "numberOfCases",
+              "type": "text",
+              "label": "Number of Cases"
+            },
+            {
+              "name": "numberOfDeaths",
+              "type": "text",
+              "label": "Number of Deaths"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Find Cases by Date",
+      "id": "casesByDate",
+      "description": "Displays the data of a specified date",
+      "methods": {
+        "getAll": {
+          "label": "Get All",
+          "dataPath": "list",
+          "url": "/cases",
+          "queryParams": [
+            {
+              "name": "location",
+              "value": "",
+              "placeholder": "Enter state",
+              "label": "State",
+              "type": "text"
+            },
+            {
+              "name": "date",
+              "value": "",
+              "placeholder": "yyyy-mm-dd",
+              "label": "Date",
+              "type": "date"
+            }
+          ],
+          "display": {
+            "type": "table"
+          },
+          "fields": [
+            {
+              "name": "state",
+              "type": "text",
+              "label": "State"
+            },
+            {
+              "name": "numberOfCases",
+              "type": "text",
+              "label": "Number of Cases"
+            },
+            {
+              "name": "numberOfDeaths",
+              "type": "text",
+              "label": "Number of Deaths"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Covid Range Data",
+      "id": "rangeData",
+      "description": "Displays a range of days",
+      "methods": {
+        "getAll": {
+          "label": "Get All",
+          "dataPath": "data",
+          "url": "/range-data",
+          "queryParams": [
+            {
+              "name": "location",
+              "value": "",
+              "placeholder": "Enter state",
+              "label": "State",
+              "type": "text"
+            },
+            {
+              "name": "startingDate",
+              "value": "",
+              "placeholder": "yyyy-mm-dd",
+              "label": "Starting Date",
+              "type": "date"
+            },
+            {
+              "name": "range",
+              "value": "",
+              "placeholder": "Enter the range",
+              "label": "Range",
+              "type": "text"
+            }
+          ],
+          "display": {
+            "type": "table"
+          },
+          "fields": [
+            {
+              "name": "date",
+              "type": "text",
+              "label": "Date"
+            },
+            {
+              "name": "cases",
+              "type": "text",
+              "label": "Number of Cases"
+            },
+            {
+              "name": "deaths",
+              "type": "text",
+              "label": "Number of Deaths"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Graph of the Cases by State",
+      "id": "cases-graph",
+      "description": "Displays the cases of each state in a graph",
+      "methods": {
+        "getAll": {
+          "label": "Get All",
+          "url": "/url-trend",
+          "dataPath": "list",
+          "queryParams": [
+            {
+              "name": "location",
+              "placeholder": "Enter state",
+              "label": "State",
+              "type": "text"
+            }
+          ],
+          "display": {
+            "type": "table"
+          },
+          "fields": [
+            {
+              "name": "url",
+              "type": "image",
+              "label": "URL"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Graph of the Change in Cases by State",
+      "id": "changes-graph",
+      "description": "Displays the change in cases of each state on a graph",
+      "methods": {
+        "getAll": {
+          "label": "Get All",
+          "url": "/url-change",
+          "dataPath": "list",
+          "queryParams": [
+            {
+              "name": "location",
+              "placeholder": "Enter state",
+              "label": "State",
+              "type": "text"
+            }
+          ],
+          "display": {
+            "type": "table"
+          },
+          "fields": [
+            {
+              "name": "url",
+              "type": "image",
+              "label": "URL"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Compare the Cases of States",
+      "id": "comparison-graph",
+      "description": "Graphs 5 states on one graph",
+      "methods": {
+        "getAll": {
+          "label": "Get All",
+          "url": "/url-comparison",
+          "dataPath": "list",
+          "queryParams": [
+            {
+              "name": "state",
+              "placeholder": "Enter states separated by commas",
+              "label": "States",
+              "type": "text"
+            }
+          ],
+          "display": {
+            "type": "table"
+          },
+          "fields": [
+            {
+              "name": "url",
+              "type": "image",
+              "label": "URL"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
