@@ -44,13 +44,11 @@ public class JobResource {
         try {
             conn = pool.getConnection();
             ScriptRunner sr = new ScriptRunner(conn);
-            File file = new File(getClass().getClassLoader().getResource("loadData.sql").getFile());
-            Reader reader = new FileReader(file);
+            InputStream stream = getClass().getResourceAsStream("loadData.sql");
+            Reader reader = new InputStreamReader(stream);
             sr.runScript(reader);
         } catch (SQLException s) {
             logger.error("SQL Exception when writing in data", s);
-        } catch (FileNotFoundException f) {
-            logger.error("File not found", f);
         }
         finally {
             if (conn != null) {
