@@ -177,7 +177,7 @@
           "fields": [
             {
               "name": "url",
-              "type": "url",
+              "type": "image",
               "label": "URL"
             }
           ]
@@ -207,7 +207,7 @@
           "fields": [
             {
               "name": "url",
-              "type": "url",
+              "type": "image",
               "label": "URL"
             }
           ]
@@ -237,7 +237,7 @@
           "fields": [
             {
               "name": "url",
-              "type": "url",
+              "type": "image",
               "label": "URL"
             }
           ]
