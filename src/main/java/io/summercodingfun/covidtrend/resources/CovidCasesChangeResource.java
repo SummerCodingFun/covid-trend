@@ -28,11 +28,16 @@ import org.slf4j.Logger;
 @Path("/covid-app")
 @Produces("image/png")
 public class CovidCasesChangeResource {
-    private ConnectionPool pool;
     private static final Logger logger = LoggerFactory.getLogger(CovidCasesChangeResource.class);
 
-    public CovidCasesChangeResource(ConnectionPool pool) {
+    private ConnectionPool pool;
+    private String host;
+    private int port;
+
+    public CovidCasesChangeResource(ConnectionPool pool, String host, int port) {
         this.pool = pool;
+        this.host = host;
+        this.port = port;
     }
 
     @GET
@@ -94,7 +99,7 @@ public class CovidCasesChangeResource {
     @Path("url-change")
     @Produces(MediaType.APPLICATION_JSON)
     public URLMessage getURLChange(@QueryParam("location") String state) throws Exception {
-        URL url = new URL(String.format("http://localhost:8080/covid-app/cases-change/%s", state));
+        URL url = new URL(String.format("http://%s:%d/covid-app/cases-change/%s", host, port, state));
         URLList u = new URLList(url);
         List<URLList> list = new ArrayList<>();
         list.add(u);

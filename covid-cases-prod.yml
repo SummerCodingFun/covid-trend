@@ -1,5 +1,8 @@
 template: The state of %s 's data
 
+host: 44.226.33.29
+port: 8080
+
 # Database settings.
 database:
   # the name of the JDBC driver, mysql in our case

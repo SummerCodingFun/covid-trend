@@ -17,6 +17,9 @@ public class CovidConfig extends Configuration {
 
     private DbConfig database;
 
+    private String host;
+    private int port;
+
     @JsonProperty
     public DbConfig getDatabase() {
         return database;
@@ -40,5 +43,21 @@ public class CovidConfig extends Configuration {
     @JsonProperty("sundial")
     public SundialConfiguration getSundialConfiguration() {
         return sundialConfiguration;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 }
