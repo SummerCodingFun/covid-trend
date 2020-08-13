@@ -243,6 +243,11 @@
           ]
         }
       }
+    },
+    {
+      "name" : "Data provided by New York Times",
+      "id": "NYTimes-credit",
+      "description": "See https://github.com/nytimes/covid-19-data"
     }
   ]
 }
