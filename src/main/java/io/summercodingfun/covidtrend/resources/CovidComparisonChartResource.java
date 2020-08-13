@@ -110,7 +110,6 @@ public class CovidComparisonChartResource {
             DateTime currentMinDate = ConnectionUtil.getMinDate(conn, state);
             DateTime maxDate = ConnectionUtil.getMaxDate(conn, state);
             DateTime date11 = new DateTime(currentMinDate);
-            DateTime date12 = new DateTime(date11.plusDays(1));
             int i = 0;
             if (currentMinDate.isAfter(minDate)) {
                 Date d1 = currentMinDate.toDate();
@@ -119,10 +118,9 @@ public class CovidComparisonChartResource {
                 i = (int) (j/(24*60*60*1000));
             }
 
-            while(date12.isBefore(maxDate)) {
-                series.add(Double.valueOf(i), Double.valueOf(ConnectionUtil.getCases(conn, state, fmt.print(date12)) - ConnectionUtil.getCases(conn, state, fmt.print(date11))));
+            while(date11.isBefore(maxDate)) {
+                series.add(Double.valueOf(i), Double.valueOf( ConnectionUtil.getCases(conn, state, fmt.print(date11))));
                 date11 = date11.plusDays(1);
-                date12 = date12.plusDays(1);
                 i++;
             }
         } finally {
