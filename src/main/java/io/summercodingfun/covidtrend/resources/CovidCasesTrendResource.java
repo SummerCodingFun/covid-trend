@@ -28,11 +28,16 @@ import org.slf4j.Logger;
 @Path("/covid-app")
 
 public class CovidCasesTrendResource {
-    private ConnectionPool pool;
     private static final Logger logger = LoggerFactory.getLogger(CovidCasesTrendResource.class);
 
-    public CovidCasesTrendResource(ConnectionPool pool) {
+    private ConnectionPool pool;
+    private String host;
+    private int port;
+
+    public CovidCasesTrendResource(ConnectionPool pool, String host, int port) {
         this.pool = pool;
+        this.host = host;
+        this.port = port;
     }
 
     @GET
@@ -99,7 +104,7 @@ public class CovidCasesTrendResource {
     @Path("/url-trend")
     @Produces(MediaType.APPLICATION_JSON)
     public URLMessage getURL(@QueryParam("location") String state) throws Exception {
-        URL url = new URL(String.format("http://localhost:8080/covid-app/cases-trend/%s", state));
+        URL url = new URL(String.format("http://%s:%d/covid-app/cases-trend/%s", host, port, state));
         URLList u = new URLList(url);
         List<URLList> list = new ArrayList<>();
         list.add(u);

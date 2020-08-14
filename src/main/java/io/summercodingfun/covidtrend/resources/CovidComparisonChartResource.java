@@ -31,11 +31,16 @@ import java.util.List;
 @Path("/covid-app")
 
 public class CovidComparisonChartResource {
-    private ConnectionPool pool;
     private static final Logger logger = LoggerFactory.getLogger(CovidCasesChangeResource.class);
 
-    public CovidComparisonChartResource(ConnectionPool pool) {
+    private ConnectionPool pool;
+    private String host;
+    private int port;
+
+    public CovidComparisonChartResource(ConnectionPool pool, String host, int port) {
         this.pool = pool;
+        this.host = host;
+        this.port = port;
     }
 
     @GET
@@ -87,7 +92,8 @@ public class CovidComparisonChartResource {
     public URLMessage getComparisonURL(@QueryParam("state") String states) throws Exception {
 
         String[] s = states.split(",");
-        String l = String.format("http://localhost:8080/covid-app/covid-comparison?state=%s", s[0].trim());
+        String l = String.format("http://%s:%d/covid-app/covid-comparison?state=%s", host, port, s[0].trim());
+
         for (int i = 1; i < s.length; i++) {
             l += String.format("&state=%s", s[i].trim());
         }

@@ -57,9 +57,9 @@ public class CovidApp extends Application<CovidConfig> {
         final CovidCaseResource caseResource = new CovidCaseResource(pool);
         final CovidRangeDataResource rangeResource = new CovidRangeDataResource(pool);
         final LatestCovidResource latestResource = new LatestCovidResource(pool);
-        final CovidCasesTrendResource casesTrendResource = new CovidCasesTrendResource(pool);
-        final CovidCasesChangeResource changeResource = new CovidCasesChangeResource(pool);
-        final CovidComparisonChartResource comparisonResource= new CovidComparisonChartResource(pool);
+        final CovidCasesTrendResource casesTrendResource = new CovidCasesTrendResource(pool, config.getHost(), config.getPort());
+        final CovidCasesChangeResource changeResource = new CovidCasesChangeResource(pool, config.getHost(), config.getPort());
+        final CovidComparisonChartResource comparisonResource= new CovidComparisonChartResource(pool, config.getHost(), config.getPort());
         final JobResource jobResource = new JobResource(pool);
         final TemplateHealthCheck healthCheck = new TemplateHealthCheck(config.getTemplate());
 
