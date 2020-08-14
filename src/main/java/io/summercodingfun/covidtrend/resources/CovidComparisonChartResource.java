@@ -63,7 +63,7 @@ public class CovidComparisonChartResource {
         }
 
         JFreeChart chart = Chart.createXYLineChart(
-                String.format("Change in Cases from %s to %s", fmt2.print(minDate), fmt2.print(maxDate)),
+                String.format("Cases from %s to %s", fmt2.print(minDate), fmt2.print(maxDate)),
                 "Days",
                 "Number of New Cases",
                 dataset
@@ -100,7 +100,7 @@ public class CovidComparisonChartResource {
     }
 
     private XYSeries getSeries(String state, DateTime minDate) throws SQLException, ParseException {
-        var series = new XYSeries(String.format("Change in Cases for %s", state));
+        var series = new XYSeries(String.format("Cases for %s", state));
 
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
         Connection conn = null;
@@ -131,39 +131,6 @@ public class CovidComparisonChartResource {
         return series;
     }
 
-    private DateTime getMinDate(String state1, String state2, String state3, String state4, String state5) throws SQLException {
-        DateTime minDate = new DateTime();
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
-            DateTime minDate1 = ConnectionUtil.getMinDate(conn, state1);
-            DateTime minDate2 = ConnectionUtil.getMinDate(conn, state2);
-            DateTime minDate3 = ConnectionUtil.getMinDate(conn, state3);
-            DateTime minDate4 = ConnectionUtil.getMinDate(conn, state4);
-            DateTime minDate5 = ConnectionUtil.getMinDate(conn, state5);
-            if (minDate.isAfter(minDate1)) {
-                minDate = minDate1;
-            }
-            if (minDate.isAfter(minDate2)) {
-                minDate = minDate2;
-            }
-            if (minDate.isAfter(minDate3)) {
-                minDate = minDate3;
-            }
-            if (minDate.isAfter(minDate4)) {
-                minDate = minDate4;
-            }
-            if (minDate.isAfter(minDate5)) {
-                minDate = minDate5;
-            }
-        } finally {
-            if (conn != null) {
-                pool.returnConnection(conn);
-            }
-        }
-        return minDate  ;
-    }
-
     public DateTime getMinDate(List<String> states) throws SQLException {
         DateTime minDate = new DateTime();
         Connection conn = null;
@@ -181,39 +148,6 @@ public class CovidComparisonChartResource {
             }
         }
         return minDate;
-    }
-
-    private DateTime getMaxDate(String state1, String state2, String state3, String state4, String state5) throws SQLException {
-        DateTime maxDate = new DateTime(Long.MIN_VALUE);
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
-            DateTime maxDate1 = ConnectionUtil.getMaxDate(conn, state1);
-            DateTime minDate2 = ConnectionUtil.getMaxDate(conn, state2);
-            DateTime maxDate3 = ConnectionUtil.getMaxDate(conn, state3);
-            DateTime maxDate4 = ConnectionUtil.getMaxDate(conn, state4);
-            DateTime maxDate5 = ConnectionUtil.getMaxDate(conn, state5);
-            if (maxDate.isBefore(maxDate1)) {
-                maxDate = maxDate1;
-            }
-            if (maxDate.isBefore(minDate2)) {
-                maxDate = minDate2;
-            }
-            if (maxDate.isBefore(maxDate3)) {
-                maxDate = maxDate3;
-            }
-            if (maxDate.isBefore(maxDate4)) {
-                maxDate = maxDate4;
-            }
-            if (maxDate.isBefore(maxDate5)) {
-                maxDate = maxDate5;
-            }
-        } finally {
-            if (conn != null) {
-                pool.returnConnection(conn);
-            }
-        }
-        return maxDate;
     }
 
     private DateTime getMaxDate(List<String> states) throws SQLException {
