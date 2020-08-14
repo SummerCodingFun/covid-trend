@@ -19,6 +19,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.WebApplicationException;
+
 public class ConnectionUtil {
     private static Logger logger = LoggerFactory.getLogger(ConnectionUtil.class);
 
@@ -36,7 +38,7 @@ public class ConnectionUtil {
             while (resultSet.next()){
                 stateCases = resultSet.getInt("cases");
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ParseException e) {
             logger.error(e.getMessage(), e);
             throw e;
         }
@@ -53,7 +55,7 @@ public class ConnectionUtil {
             while (resultSet.next()){
                 stateDeaths = resultSet.getInt("deaths");
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ParseException e) {
             logger.error(e.getMessage(), e);
             throw e;
         }
@@ -129,7 +131,7 @@ public class ConnectionUtil {
             if (rs.next() == false) {
                 return false;
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ParseException e) {
             logger.error(e.getMessage(), e);
             throw e;
         }

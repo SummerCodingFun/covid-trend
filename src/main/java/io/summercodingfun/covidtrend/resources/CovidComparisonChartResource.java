@@ -1,7 +1,6 @@
 package io.summercodingfun.covidtrend.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.Lists;
 import io.summercodingfun.covidtrend.api.URLList;
 import io.summercodingfun.covidtrend.api.URLMessage;
 import io.summercodingfun.covidtrend.chart.Chart;
@@ -89,7 +88,6 @@ public class CovidComparisonChartResource {
 
         String[] s = states.split(",");
         String l = String.format("http://localhost:8080/covid-app/covid-comparison?state=%s", s[0].trim());
-
         for (int i = 1; i < s.length; i++) {
             l += String.format("&state=%s", s[i].trim());
         }
@@ -112,7 +110,6 @@ public class CovidComparisonChartResource {
             DateTime currentMinDate = ConnectionUtil.getMinDate(conn, state);
             DateTime maxDate = ConnectionUtil.getMaxDate(conn, state);
             DateTime date11 = new DateTime(currentMinDate);
-            DateTime date12 = new DateTime(date11.plusDays(1));
             int i = 0;
             if (currentMinDate.isAfter(minDate)) {
                 Date d1 = currentMinDate.toDate();
@@ -121,10 +118,9 @@ public class CovidComparisonChartResource {
                 i = (int) (j/(24*60*60*1000));
             }
 
-            while(date12.isBefore(maxDate)) {
-                series.add(Double.valueOf(i), Double.valueOf(ConnectionUtil.getCases(conn, state, fmt.print(date12)) - ConnectionUtil.getCases(conn, state, fmt.print(date11))));
+            while(date11.isBefore(maxDate)) {
+                series.add(Double.valueOf(i), Double.valueOf( ConnectionUtil.getCases(conn, state, fmt.print(date11))));
                 date11 = date11.plusDays(1);
-                date12 = date12.plusDays(1);
                 i++;
             }
         } finally {
